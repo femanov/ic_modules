@@ -1,0 +1,5 @@
+﻿SELECT dev.name,devtype.name,chan.name FROM dev,devtype,chan,dev_devtype,devtype_chans,devtype_inherit
+WHERE dev.id=3 and dev.id=dev_devtype.dev_id and
+(devtype.id=dev_devtype.devtype_id or (devtype_inherit.from_devtype_id=dev_devtype.devtype_id 
+and devtype_inherit.from_devtype_id=devtype.id) ) and
+(devtype.id=devtype_chans.devtype_id and devtype_chans.chan_id=chan.id)

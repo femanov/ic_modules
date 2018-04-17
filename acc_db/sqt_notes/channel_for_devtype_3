@@ -1,0 +1,6 @@
+﻿select chan.id,chan.name,chan.dtype,chan.dsize,chan.units from devtype,devtype_chans,chan
+where devtype.id=20 and devtype_chans.devtype_id=devtype.id and devtype_chans.chan_id=chan.id
+union
+select chan.id,chan.name,chan.dtype,chan.dsize,chan.units from devtype,devtype_chans,chan,devtype_inherit
+where devtype_inherit.from_devtype_id=20 and devtype.id=devtype_inherit.to_devtype_id
+and devtype_chans.devtype_id=devtype.id and devtype_chans.chan_id=chan.id

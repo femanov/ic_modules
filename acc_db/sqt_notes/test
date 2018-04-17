@@ -1,0 +1,6 @@
+﻿select dev.name,chan.name,devtype.name from chan,dev,devtype,dev_devtype,devtype_chans,devtype_inherit where
+dev.id=3 and
+dev.id=dev_devtype.dev_id and
+(devtype.id=dev_devtype.devtype.id or 
+(devtype_inherit.from_devtype_id=dev_devtype.devtype.id and devtype_inherit.to_devtype_id=devtype.id)) and
+devtype_chans.devtype_id=devtype.id and devtype_chans.chan_id=chan.id

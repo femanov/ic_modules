@@ -1,0 +1,2 @@
+﻿SELECT modedata.protocol,modedata.chan_name,modedata.namesys_id,modedata.dev_id,modedata.chan_id,modedata.value,modedata.available
+FROM modedata, chan WHERE chan.id=modedata.chan_id and chan.access='rw' and chan.soft=0 and modedata.available=1 and mode_id=20

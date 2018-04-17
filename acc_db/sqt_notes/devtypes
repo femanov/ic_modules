@@ -1,0 +1,2 @@
+﻿select chan.id,chan.name,chan.dtype,chan.dsize,chan.units from chan,devtype_chans where
+chan.id=devtype_chans.chan_id and devtype_chans.devtype_id=17

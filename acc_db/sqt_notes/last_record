@@ -1,0 +1,1 @@
+﻿select * from modedata order by id desc limit 1

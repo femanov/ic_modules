@@ -1,0 +1,5 @@
+﻿WITH RECURSIVE topsys AS (
+((select id, label, ord, array[id] as path from sys where parent_id is NULL ))
+UNION ALL select sys.id, sys.label, sys.ord, (topsys.path || sys.id) from topsys, sys
+where sys.parent_id=topsys.id )
+select * from topsys order by ord;

@@ -1,0 +1,9 @@
+﻿CREATE TYPE chan_row AS (
+    protocol varchar(100),
+    ser varchar(300),
+    devpref varchar(10),
+    dev_name varchar(100),
+    chan_name varchar(100),
+    namesys_id integer,
+    dev_id integer,
+    chan_id integer)

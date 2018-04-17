@@ -1,0 +1,4 @@
+﻿select * from devtype,devtype_inherit,devtype_chans,chan
+where ((devtype.id=20 and devtype_inherit.from_devtype_id=devtype.id) or 
+(devtype_inherit.from_devtype_id=20 and devtype.id=devtype_inherit.to_devtype_id))
+and devtype_chans.devtype_id=devtype.id and devtype_chans.chan_id=chan.id

@@ -1,0 +1,5 @@
+﻿select fchans.protocol,fchans.name,fchans.namesys_id,fchans.dev_id,fchans.chan_id from fchans()  WHERE NOT EXISTS (SELECT fullchan.chan_name, fullchan.namesys_id, fullchan.dev_id, fullchan.chan_id FROM fullchan
+                      WHERE fullchan.chan_name = fchans.name and
+                       fullchan.namesys_id=fchans.namesys_id and
+                       fullchan.dev_id = fchans.dev_id and
+                       fullchan.chan_id = fchans.chan_id);

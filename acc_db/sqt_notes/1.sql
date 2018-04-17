@@ -1,0 +1,1 @@
+﻿select * from dev,devtype, devtype_chans,chan where dev.devtype_id=devtype.id and devtype.id=devtype_chans.devtype_id and chan.id=devtype_chans.chan_id
