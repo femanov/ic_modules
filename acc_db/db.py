@@ -20,10 +20,12 @@ class acc_db:
 
     def db_connect(self):
         try:
-            self.conn = psycopg2.connect(None, DB, DBUSER, DBPASSWORD, DBHOST)
-        except:
+            self.conn = psycopg2.connect(None, dbname=DB, user=DBUSER, password=DBPASSWORD, host=DBHOST)
+        except psycopr2.Error as e:
             print("unable to connect to DB")
-            sys.exit()
+            print("error code: ", e.pgcode)
+            print("error str: ", e.pgerror)
+            sys.exit(1) # what the fuck?
         self.cur = self.conn.cursor()
 
     def execute(self, request, params=None):
