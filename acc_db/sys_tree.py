@@ -5,7 +5,7 @@ from aux.Qt import QtGui, uic, QtCore, QtWidgets
 
 import os
 
-modpath = os.path.dirname(os.path.realpath(__file__))
+
 print_selection = False
 
 
