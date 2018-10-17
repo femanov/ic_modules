@@ -1,8 +1,6 @@
 import psycopg2
 from io import BytesIO
 
-from settings.db import *
-
 import psycopg2.extensions
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
@@ -22,9 +20,9 @@ class DBWrapper:
         self.db_connect()
 
     def __del__(self):
-        self.conn.commit()
-        self.cur.close()
-        self.conn.close()
+        if self.connected:
+            self.cur.close()
+            self.conn.close()
 
     def db_connect(self):
         try:
@@ -33,6 +31,7 @@ class DBWrapper:
             print("unable to connect to DB")
             print("error code: ", e.pgcode)
             print("error str: ", e.pgerror)
+            print(self.db_kwargs)
             self.connected = False
         self.connected = True
         self.cur = self.conn.cursor()
@@ -55,11 +54,9 @@ class DBWrapper:
 
 
 class AccConfig(DBWrapper):
-
     def fchans(self):
         self.execute("SELECT * FROM fchans()")
         data = self.cur.fetchall()
-        self.conn.commit()
         chanlist = [[y for y in x] for x in data]
         return chanlist
 
@@ -67,18 +64,16 @@ class AccConfig(DBWrapper):
     def mode_chans(self):
         self.execute("SELECT protocol,chan_name,id FROM fullchan WHERE is_current=1")
         data = self.cur.fetchall()
-        self.conn.commit()
         chanlist = [[y for y in x] for x in data]
         return chanlist
 
-
     def sys_list(self):
         self.execute("SELECT id,label FROM sys order by id")
-        self.conn.commit()
         return self.cur.fetchall()
-
 
     def sys_list_chans(self, syslist):
         pass
 
-
+    def savable_access_kinds(self):
+        self.execute("SELECT ARRAY(SELECT DISTINCT access from chan WHERE savable)")
+        return self.cur.fetchall()[0][0]

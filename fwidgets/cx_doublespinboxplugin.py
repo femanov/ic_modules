@@ -1,16 +1,16 @@
 from aux.Qt import QtGui, QtDesigner
-from fwidgets.fdoublespinboxcx import FDoubleSpinBoxCX
+from fwidgets.doublespinboxcx import DoubleSpinBoxCX
 
 
-class FDoubleSpinBoxCXWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
+class DoubleSpinBoxCXWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent=None):
-        super(FDoubleSpinBoxCXWidgetPlugin, self).__init__(parent)
+        super(DoubleSpinBoxCXWidgetPlugin, self).__init__(parent)
 
     def name(self):
-        return 'FDoubleSpinBoxCX'
+        return 'DoubleSpinBoxCX'
 
     def group(self):
-        return 'Fedor'
+        return 'CX widgets'
 
     def icon(self):
         return QtGui.QIcon()
@@ -28,4 +28,4 @@ class FDoubleSpinBoxCXWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return 'a double spinbox adapted to CX control system'
 
     def createWidget(self, parent):
-        return FDoubleSpinBoxCX(parent)
+        return DoubleSpinBoxCX(parent)

@@ -18,7 +18,6 @@ class FDoubleSpinBox(QtWidgets.QDoubleSpinBox):
     def __init__(self, parent=None):
         super(FDoubleSpinBox, self).__init__(parent)
         self.valueChanged.connect(self.done)
-        self.cs_name = ""
         self.setMinimum(-100000.0)
         self.setMaximum(100000.0)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)

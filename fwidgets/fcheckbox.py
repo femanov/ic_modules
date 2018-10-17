@@ -7,7 +7,6 @@ class FCheckBox(QtWidgets.QCheckBox):
     def __init__(self, parent=None):
         super(FCheckBox, self).__init__(parent)
         self.clicked.connect(self.done)
-        self.cs_name = None
 
     def setValue(self, state):
         self.setChecked(state)

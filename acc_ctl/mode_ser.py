@@ -35,8 +35,8 @@ class ModesCtl(QtCore.QObject):
 
 class ModesClient(ModesCtl):
     # signals for mode save/load
-    modeSaved = QtCore.pyqtSignal()      # emited when recieved deamon mesage "mode saved"
-    modeLoaded = QtCore.pyqtSignal(str)  # emited when recieved deamon mesage "mode"
+    modeSaved = QtCore.pyqtSignal(dict)   # emited when recieved deamon mesage "mode saved"
+    modeLoaded = QtCore.pyqtSignal(dict)  # emited when recieved deamon mesage "mode"
 
     # signals for automatic control
     markedLoad = QtCore.pyqtSignal(int)  # emited when switching to marked mode
@@ -55,7 +55,6 @@ class ModesClient(ModesCtl):
         self.timer = QtCore.QTimer()
         self.delay = 100
 
-
     def res_cb(self, chan):
         try:
             cdict = json.loads(chan.val)
@@ -63,10 +62,12 @@ class ModesClient(ModesCtl):
             return
         if cdict['cmd'] == 'mode loaded':
             self.mode = None
-            self.modeLoaded.emit(cdict['msg'])
+            cdict['time'] = chan.time
+            self.modeLoaded.emit(cdict)
 
         if cdict['cmd'] == 'mode saved':
-            self.modeSaved.emit()
+            cdict['time'] = chan.time
+            self.modeSaved.emit(cdict)
 
         if cdict['cmd'] == 'update':
             self.update.emit()
