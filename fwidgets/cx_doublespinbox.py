@@ -3,9 +3,9 @@ import pycx4.qcda as cda
 from .fdoublespinbox import FDoubleSpinBox
 
 
-class DoubleSpinBoxCX(FDoubleSpinBox):
+class CXDoubleSpinBox(FDoubleSpinBox):
     def __init__(self, parent=None, cname=None):
-        super(DoubleSpinBoxCX, self).__init__(parent)
+        super(CXDoubleSpinBox, self).__init__(parent)
         self.valueChanged.connect(self.done)
         self.chan = None
         self._cname = cname

@@ -1,5 +1,5 @@
 from aux.Qt import QtCore, QtWidgets
-from fcheckbox import FCheckBox
+from .fcheckbox import FCheckBox
 import pycx4.qcda as cda
 
 
