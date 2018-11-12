@@ -10,7 +10,7 @@ class FLCDNumberWidgetPlugin(QPyDesignerCustomWidgetPlugin):
         return 'FLCDNumber'
  
     def group(self):
-        return 'Fedor'
+        return 'CX custom widgets'
  
     def icon(self):
         return QIcon()

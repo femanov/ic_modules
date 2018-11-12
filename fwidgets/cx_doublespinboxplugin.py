@@ -10,7 +10,7 @@ class DoubleSpinBoxCXWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return 'DoubleSpinBoxCX'
 
     def group(self):
-        return 'CX widgets'
+        return 'CX custom widgets'
 
     def icon(self):
         return QtGui.QIcon()

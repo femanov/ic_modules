@@ -29,7 +29,7 @@ class LedPlugin(QPyDesignerCustomWidgetPlugin):
         return "LedWidget"
 
     def group(self):
-        return "ICS Custom Widgets"
+        return "CX custom widgets"
 
     def icon(self):
         return QIcon()

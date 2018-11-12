@@ -10,7 +10,7 @@ class FSpinBoxWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return 'FSpinBox'
  
     def group(self):
-        return 'Fedor'
+        return 'CX custom widgets'
  
     def icon(self):
         return QtGui.QIcon()
