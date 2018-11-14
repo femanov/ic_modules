@@ -6,10 +6,7 @@ import pycx4.qcda as cda
 class CXCheckBox(FCheckBox):
     def __init__(self, parent=None, **kwargs):
         super(CXCheckBox, self).__init__()
-        if 'cname' in kwargs:
-            self._cname = kwargs['cname']
-        else:
-            self._cname = None
+        self._cname = kwargs.get('cname', None)
 
         self.chan = None
         self.cx_connect()
