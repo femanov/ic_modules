@@ -1,4 +1,4 @@
-from aux.Qt import QtCore, QtWidgets
+from aQt.QtCore import pyqtSlot, pyqtProperty, Qt
 import pycx4.qcda as cda
 from .fdoublespinbox import FDoubleSpinBox
 
@@ -15,12 +15,11 @@ class CXDoubleSpinBox(FDoubleSpinBox):
 
 
     def mousePressEvent(self, QMouseEvent):
-        if QMouseEvent.button() == QtCore.Qt.LeftButton:
+        if QMouseEvent.button() == Qt.LeftButton:
             print("Left Button Clicked")
-        elif QMouseEvent.button() == QtCore.Qt.RightButton:
+        elif QMouseEvent.button() == Qt.RightButton:
             #do what you want here
             print("Right Button Clicked")
-
 
     def cx_connect(self):
         if self._cname is None:
@@ -28,14 +27,14 @@ class CXDoubleSpinBox(FDoubleSpinBox):
         self.chan = cda.DChan(self._cname, private=True)
         self.chan.valueChanged.connect(self.cs_update)
 
-    @QtCore.pyqtSlot(float)
+    @pyqtSlot(float)
     def cs_send(self, value):
         self.chan.setValue(value)
 
     def cs_update(self, chan):
         self.setValue(chan.val)
 
-    @QtCore.pyqtSlot(float)
+    @pyqtSlot(float)
     def setCname(self, cname):
         self._cname = cname
         self.cx_connect()
@@ -43,5 +42,5 @@ class CXDoubleSpinBox(FDoubleSpinBox):
     def getCname(self):
         return self._cname
 
-    cname = QtCore.pyqtProperty(str, getCname, setCname)
+    cname = pyqtProperty(str, getCname, setCname)
 

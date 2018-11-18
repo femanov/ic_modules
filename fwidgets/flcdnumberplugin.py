@@ -1,6 +1,6 @@
-from PyQt5.QtDesigner import QPyDesignerCustomWidgetPlugin
-from PyQt5.QtGui import QIcon
-from flcdnumber import *
+from aQt.QtDesigner import QPyDesignerCustomWidgetPlugin
+from aQt.QtGui import QIcon
+from flcdnumber import FLCDNumber, CXLCDNumber
 
 class FLCDNumberWidgetPlugin(QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent=None):
@@ -36,10 +36,10 @@ class FLCDNumberCXWidgetPlugin(QPyDesignerCustomWidgetPlugin):
         QPyDesignerCustomWidgetPlugin.__init__(self)
 
     def name(self):
-        return 'FLCDNumberCX'
+        return 'CXLCDNumber'
 
     def group(self):
-        return 'Fedor'
+        return 'CX custom widgets'
 
     def icon(self):
         return QIcon()
@@ -57,4 +57,4 @@ class FLCDNumberCXWidgetPlugin(QPyDesignerCustomWidgetPlugin):
         return 'a LCDNumber adapted to BINP IC control system'
 
     def createWidget(self, parent):
-        return FLCDNumberCX(parent)
+        return CXLCDNumber(parent)

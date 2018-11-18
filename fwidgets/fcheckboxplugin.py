@@ -1,7 +1,9 @@
-from aux.Qt import QtGui, QtDesigner
-from fcheckbox import *
+from aQt.QtDesigner import QPyDesignerCustomWidgetPlugin
+from aQt.QtGui import QIcon
+
+from fcheckbox import FCheckBox
  
-class FComboBoxWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
+class FComboBoxWidgetPlugin(QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent=None):
         super(FComboBoxWidgetPlugin, self).__init__(parent)
  
@@ -12,7 +14,7 @@ class FComboBoxWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return 'CX custom widgets'
  
     def icon(self):
-        return QtGui.QIcon()
+        return QIcon()
  
     def isContainer(self):
         return False

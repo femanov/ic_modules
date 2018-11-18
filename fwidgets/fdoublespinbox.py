@@ -1,4 +1,6 @@
-from aux.Qt import *
+from aQt.QtCore import Qt, pyqtSignal
+from aQt.QtWidgets import QDoubleSpinBox
+
 
 # class SpinWheelEventFilter(QObject):
 #     def eventFilter(self, receiver, event):
@@ -12,15 +14,15 @@ from aux.Qt import *
 #         #return super(MyEventFilter,self).eventFilter(receiver, event)
 
 
-class FDoubleSpinBox(QtWidgets.QDoubleSpinBox):
-    done = QtCore.pyqtSignal(float)
+class FDoubleSpinBox(QDoubleSpinBox):
+    done = pyqtSignal(float)
 
     def __init__(self, parent=None):
         super(FDoubleSpinBox, self).__init__(parent)
         self.valueChanged.connect(self.done)
         self.setMinimum(-100000.0)
         self.setMaximum(100000.0)
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.setFocusPolicy(Qt.StrongFocus)
 
     def wheelEvent(self, event):
         if self.hasFocus():
@@ -29,9 +31,9 @@ class FDoubleSpinBox(QtWidgets.QDoubleSpinBox):
             event.ignore()
 
     def focusInEvent(self, event):
-        self.setFocusPolicy(QtCore.Qt.WheelFocus)
+        self.setFocusPolicy(Qt.WheelFocus)
         self.update()
 
     def focusOutEvent(self, event):
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.setFocusPolicy(Qt.StrongFocus)
         self.update()

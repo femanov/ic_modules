@@ -1,8 +1,9 @@
-from aux.Qt import QtCore, QtWidgets
+from aQt.QtWidgets import QCheckBox
+from aQt.QtCore import pyqtSlot, pyqtProperty, pyqtSignal
 
-class FCheckBox(QtWidgets.QCheckBox):
+class FCheckBox(QCheckBox):
 
-    done = QtCore.pyqtSignal(bool)
+    done = pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(FCheckBox, self).__init__(parent)

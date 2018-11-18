@@ -1,8 +1,9 @@
-from aux.Qt import *
-from fspinbox import *
+from aQt.QtDesigner import QPyDesignerCustomWidgetPlugin
+from aQt.QtGui import QIcon
+from fspinbox import FSpinBox
 
 
-class FSpinBoxWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
+class FSpinBoxWidgetPlugin(QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent=None):
         super().__init__(parent)
  
@@ -13,7 +14,7 @@ class FSpinBoxWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return 'CX custom widgets'
  
     def icon(self):
-        return QtGui.QIcon()
+        return QIcon()
  
     def isContainer(self):
         return False

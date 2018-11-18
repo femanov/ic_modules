@@ -1,7 +1,8 @@
-from aux.Qt import *
+from aQt.QtWidgets import QSpinBox
+from aQt.QtCore import pyqtSignal, Qt
 
-class FSpinBox(QtWidgets.QSpinBox):
-    done = QtCore.pyqtSignal(int)
+class FSpinBox(QSpinBox):
+    done = pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(FSpinBox, self).__init__(parent)
@@ -17,9 +18,9 @@ class FSpinBox(QtWidgets.QSpinBox):
             event.ignore()
 
     def focusInEvent(self, event):
-        self.setFocusPolicy(QtCore.Qt.WheelFocus)
+        self.setFocusPolicy(Qt.WheelFocus)
         self.update()
 
     def focusOutEvent(self, event):
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.setFocusPolicy(Qt.StrongFocus)
         self.update()

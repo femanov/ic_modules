@@ -1,4 +1,5 @@
-from aux.Qt import *
+from aQt.QtGui import QColor
+from aQt.QtCore import QTimer
 import pycx4.qcda as cda
 
 from .ledwidget import LedWidget
@@ -10,9 +11,10 @@ class CXEventLed(LedWidget):
         super(CXEventLed, self).__init__(parent)
 
         self._cname = kwargs.get('cname', None)
+        self.chan = None
         self.cx_connect()
 
-        self.timer = QtCore.QTimer()
+        self.timer = QTimer()
 
     def cx_connect(self):
         if self._cname is None:
@@ -21,11 +23,11 @@ class CXEventLed(LedWidget):
         self.chan.valueMeasured.connect(self.cs_update)
 
     def cs_update(self, chan):
-        self.color = QtGui.QColor(0, 255, 0)
+        self.color = QColor(0, 255, 0)
         self.timer.singleShot(200, self.unlight)
 
     def unlight(self):
-        self.color = QtGui.QColor(0, 50, 0)
+        self.color = QColor(0, 50, 0)
 
 
 

@@ -1,7 +1,5 @@
-#!/usr/bin/python3
-
-from PyQt5.QtGui import QIcon
-from PyQt5.QtDesigner import QPyDesignerCustomWidgetPlugin
+from aQt.QtGui import QIcon
+from aQt.QtDesigner import QPyDesignerCustomWidgetPlugin
 
 from ledwidget import LedWidget
 

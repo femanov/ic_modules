@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from aQt.QtCore import QTimer, Qt, QSize, pyqtSlot, pyqtProperty
+from aQt.QtGui import QColor, QPainter, QRadialGradient, QBrush
+from aQt.QtWidgets import QWidget, QApplication
 
 
 class LedWidget(QWidget):

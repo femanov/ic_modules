@@ -1,9 +1,9 @@
-from aux.Qt import *
+from aQt.QtWidgets import QComboBox
+from aQt.QtCore import pyqtSignal
 
+class FComboBox(QComboBox):
 
-class FComboBox(QtWidgets.QComboBox):
-
-    done = QtCore.pyqtSignal(int)
+    done = pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(FComboBox, self).__init__(parent)

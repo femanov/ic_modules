@@ -1,8 +1,9 @@
-from aux.Qt import *
+from aQt.QtWidgets import QLCDNumber
+from aQt.QtCore import pyqtSlot, pyqtProperty
 import pycx4.qcda as cda
 
 
-class CXLCDNumber(QtWidgets.QLCDNumber):
+class CXLCDNumber(QLCDNumber):
     def __init__(self, parent=None, cname=None):
         super(CXLCDNumber, self).__init__(parent)
 
@@ -19,7 +20,7 @@ class CXLCDNumber(QtWidgets.QLCDNumber):
     def cs_update(self, chan):
         self.display(chan.val)
 
-    @QtCore.pyqtSlot(float)
+    @pyqtSlot(float)
     def setCname(self, cname):
         self._cname = cname
         self.cx_connect()
@@ -27,4 +28,4 @@ class CXLCDNumber(QtWidgets.QLCDNumber):
     def getCname(self):
         return self._cname
 
-    cname = QtCore.pyqtProperty(str, getCname, setCname)
+    cname = pyqtProperty(str, getCname, setCname)

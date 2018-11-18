@@ -1,4 +1,4 @@
-from aux.Qt import QtCore, QtWidgets
+from aQt.QtCore import pyqtSlot, pyqtProperty, Qt
 from .fcheckbox import FCheckBox
 import pycx4.qcda as cda
 
@@ -18,17 +18,17 @@ class CXCheckBox(FCheckBox):
         self.chan = cda.DChan(self._cname, private=True)
         self.chan.valueChanged.connect(self.cs_update)
 
-    @QtCore.pyqtSlot(bool)
+    @pyqtSlot(bool)
     def cs_send(self, value):
         self.chan.setValue(value)
 
     def cs_update(self, chan):
         if chan.val != 0:
-            self.setValue(QtCore.Qt.Checked)
+            self.setValue(Qt.Checked)
         else:
-            self.setValue(QtCore.Qt.Unchecked)
+            self.setValue(Qt.Unchecked)
 
-    @QtCore.pyqtSlot(str)
+    @pyqtSlot(str)
     def set_cname(self, cname):
         self._cname = cname
         self.cx_connect()
@@ -36,7 +36,7 @@ class CXCheckBox(FCheckBox):
     def get_cname(self):
         return self._cname
 
-    cname = QtCore.pyqtProperty(str, get_cname, set_cname)
+    cname = pyqtProperty(str, get_cname, set_cname)
 
 
 

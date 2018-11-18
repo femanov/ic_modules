@@ -1,9 +1,14 @@
-from aux.Qt import QtGui, QtDesigner
+#import os
+#modpath = os.path.dirname(os.path.realpath(__file__))
+
+
+from aQt.QtGui import QIcon
+from aQt.QtDesigner import QPyDesignerCustomWidgetPlugin
 from fwidgets.fcombobox import FComboBox
  
-class FComboBoxWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
+class FComboBoxWidgetPlugin(QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super(FComboBoxWidgetPlugin, self).__init__(parent)
  
     def name(self):
         return 'FComboBox'
@@ -12,7 +17,7 @@ class FComboBoxWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return 'CX custom widgets'
  
     def icon(self):
-        return QtGui.QIcon()
+        return QIcon("./img/icon1.png")
  
     def isContainer(self):
         return False

@@ -1,9 +1,12 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-#from actl import *
+from aQt.QtWidgets import QLCDNumber
+#from aQt.QtCore import *
+
 
 class FLCDNumber(QLCDNumber):
     def __init__(self, parent=None):
-        QLCDNumber.__init__(self, parent)
+        super(FLCDNumber, self).__init__(parent)
 
 
+
+class CXLCDNumber(FLCDNumber):
+    pass

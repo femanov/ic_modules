@@ -1,8 +1,9 @@
-from aux.Qt import QtCore, QtWidgets
+from aQt.QtWidgets import QComboBox
+from aQt.QtCore import pyqtSlot, pyqtProperty
 import pycx4.qcda as cda
 
 
-class CXTextComboBox(QtWidgets.QComboBox):
+class CXTextComboBox(QComboBox):
     def __init__(self, *args, **kwargs):
         super(CXTextComboBox, self).__init__(*args,)
         self._cname = kwargs.get('cname', None)
@@ -21,20 +22,21 @@ class CXTextComboBox(QtWidgets.QComboBox):
         self.chan = cda.StrChan(self._cname, private=True)
         self.chan.valueChanged.connect(self.cs_update)
 
+    @pyqtSlot(str)
     def setValue(self, value):
         try:
             self.setCurrentIndex(self._values.index(value))
         except ValueError:
             self.setCurrentIndex(1)
 
-    @QtCore.pyqtSlot(int)
+    @pyqtSlot(int)
     def cs_send(self, ind):
         self.chan.setValue(self._values[ind])
 
     def cs_update(self, chan):
         self.setValue(chan.val)
 
-    @QtCore.pyqtSlot(str)
+    @pyqtSlot(str)
     def set_cname(self, cname):
         self._cname = cname
         self.cx_connect()
@@ -42,4 +44,4 @@ class CXTextComboBox(QtWidgets.QComboBox):
     def get_cname(self):
         return self._cname
 
-    cname = QtCore.pyqtProperty(str, get_cname, set_cname)
+    cname = pyqtProperty(str, get_cname, set_cname)
