@@ -75,5 +75,5 @@ class AccConfig(DBWrapper):
         pass
 
     def savable_access_kinds(self):
-        self.execute("SELECT ARRAY(SELECT DISTINCT access from chan WHERE savable)")
+        self.execute("SELECT ARRAY(SELECT access FROM caccess_type WHERE savable)")
         return self.cur.fetchall()[0][0]
