@@ -19,7 +19,7 @@ class CXEventLed(LedWidget):
     def cx_connect(self):
         if self._cname is None:
             return
-        self.chan = cda.DChan(self._cname, private=True, on_update=True)
+        self.chan = cda.IChan(self._cname, private=True, on_update=True)
         self.chan.valueMeasured.connect(self.cs_update)
 
     def cs_update(self, chan):

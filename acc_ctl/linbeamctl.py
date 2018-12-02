@@ -19,8 +19,8 @@ class LinBeamCtl(QObject):
     def __init__(self):
         super(LinBeamCtl, self).__init__()
 
-        self.cav_h_iset_chan = cda.DChan('linac1:11.rst1.CAV_H.Iset@u')
-        self.cav_h_imeas_chan = cda.DChan('linac1:11.rst1.CAV_H.Imes@u')
+        self.cav_h_iset_chan = cda.DChan('canhw:11.rst1.CAV_H.Iset@u')
+        self.cav_h_imeas_chan = cda.DChan('canhw:11.rst1.CAV_H.Imes@u')
 
         self.cav_h_iset_chan.valueChanged.connect(self.iset_cb)
         self.cav_h_imeas_chan.valueChanged.connect(self.imeas_cb)

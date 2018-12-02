@@ -15,11 +15,13 @@ class CXCheckBox(FCheckBox):
     def cx_connect(self):
         if self._cname is None:
             return
-        self.chan = cda.DChan(self._cname, private=True)
+        self.chan = cda.IChan(self._cname, private=True)
         self.chan.valueChanged.connect(self.cs_update)
 
     @pyqtSlot(bool)
     def cs_send(self, value):
+        if int(value) == self.chan.val:
+            return
         self.chan.setValue(value)
 
     def cs_update(self, chan):
@@ -30,6 +32,8 @@ class CXCheckBox(FCheckBox):
 
     @pyqtSlot(str)
     def set_cname(self, cname):
+        if self._cname == cname:
+            return
         self._cname = cname
         self.cx_connect()
 

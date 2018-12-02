@@ -43,7 +43,7 @@ class K500Director(QObject):
     def __init__(self):
         super(K500Director, self).__init__()
 
-        self.mode_ctl = modes.ModesClient()
+        self.mode_ctl = mode_ser.ModesClient()
 
         self.walkers = {name: MagWalker(remag_srv + '.' + name, name) for name in remag_devs}
 

@@ -10,8 +10,8 @@ FDoubleSpinBox = fdoublespinbox.FDoubleSpinBox
 FComboBox = fcombobox.FComboBox
 
 
-class CXPlugins(QPyDesignerCustomWidgetCollectionPlugin):
-    def __init__(self, parent=None):
-        super(CXPlugins, self).__init__(parent)
-
+# class CXPlugins(QPyDesignerCustomWidgetCollectionPlugin):
+#     def __init__(self, parent=None):
+#         super(CXPlugins, self).__init__(parent)
+#
 

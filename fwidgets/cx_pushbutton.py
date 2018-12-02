@@ -14,7 +14,7 @@ class CXPushButton(QPushButton):
     def cx_connect(self):
         if self._cname is None:
             return
-        self.chan = cda.DChan(self._cname, private=True)
+        self.chan = cda.IChan(self._cname, private=True, on_update=True)
 
     @pyqtSlot()
     def cs_send(self):
