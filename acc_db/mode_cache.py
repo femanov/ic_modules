@@ -54,5 +54,6 @@ class ModeCache:
                 if key in self.data:
                     res.append(self.data[key])
                 else:
-                    print(key)
+                    pass
+                    #print(key) # to search not avaliable keys
         return res
