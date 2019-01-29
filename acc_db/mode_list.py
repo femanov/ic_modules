@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import math
-from aux.Qt import QtGui, uic, QtCore, QtWidgets
+from aux.Qt import QtGui, QtCore, QtWidgets
+from fwidgets.auxwidgets import BaseGridW
 from fwidgets.fspinbox import FSpinBox
 
 from acc_ctl.mode_defs import mode_colors, rev_mode_map, mode_map
@@ -90,17 +91,12 @@ class ModeList(QtWidgets.QTableWidget):
         self.modeSelected.emit(self.all_modes[row][0])
 
 
-class ModeListFilter(QtWidgets.QWidget):
+class ModeListFilter(BaseGridW):
     # limit, offset, search
     ctrlsUpdate = QtCore.pyqtSignal(dict)
 
     def __init__(self, parent=None):
         super(ModeListFilter, self).__init__(parent)
-        self.setContentsMargins(0, 0, 0, 0)
-        self.grid = QtWidgets.QGridLayout()
-        self.grid.setContentsMargins(0, 0, 0, 0)
-        self.grid.setSpacing(1)
-        self.setLayout(self.grid)
 
         self.grid.addWidget(QtWidgets.QLabel("search"), 0, 0)
 
@@ -194,17 +190,12 @@ class ModeListFilter(QtWidgets.QWidget):
                 'filter': self.filter})
 
 
-class ModeListBControls(QtWidgets.QWidget):
+class ModeListBControls(BaseGridW):
     mark = QtCore.pyqtSignal(str)
     load = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(ModeListBControls, self).__init__(parent)
-        self.setContentsMargins(0, 0, 0, 0)
-        self.grid = QtWidgets.QGridLayout()
-        self.grid.setContentsMargins(0, 0, 0, 0)
-        self.grid.setSpacing(0)
-        self.setLayout(self.grid)
 
         self.grid.addWidget(QtWidgets.QLabel("mark"), 0, 0, 2, 1)
 
@@ -242,18 +233,12 @@ class ModeListBControls(QtWidgets.QWidget):
         self.mark.emit(self.m_names[ind])
 
 
-class ModeListSaveBlock(QtWidgets.QWidget):
+class ModeListSaveBlock(BaseGridW):
     saveMode = QtCore.pyqtSignal(str, str)
     outMsg = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(ModeListSaveBlock, self).__init__(parent)
-
-        self.setContentsMargins(0, 0, 0, 0)
-        self.grid = QtWidgets.QGridLayout()
-        self.grid.setContentsMargins(0, 0, 0, 0)
-        self.grid.setSpacing(0)
-        self.setLayout(self.grid)
 
         self.grid.addWidget(QtWidgets.QLabel("Comment:"), 0, 0)
         self.grid.addWidget(QtWidgets.QLabel("author:"), 1, 0)
@@ -280,7 +265,7 @@ class ModeListSaveBlock(QtWidgets.QWidget):
         self.saveMode.emit(author, comment)
 
 
-class ModeListFull(QtWidgets.QWidget):
+class ModeListFull(BaseGridW):
     markMode = QtCore.pyqtSignal(int, str, str, str, int)  # mode_id, mark_id
     saveMode = QtCore.pyqtSignal(str, str)  # author, comment
     outMsg = QtCore.pyqtSignal(str)
@@ -288,12 +273,6 @@ class ModeListFull(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(ModeListFull, self).__init__(parent)
         self.modes_db = ModesDB(**mode_db_cfg)
-
-        self.setContentsMargins(0, 0, 0, 0)
-        self.grid = QtWidgets.QGridLayout()
-        self.grid.setContentsMargins(0, 0, 0, 0)
-        self.grid.setSpacing(0)
-        self.setLayout(self.grid)
 
         self.filterw = ModeListFilter()
         self.grid.addWidget(self.filterw, 0, 0)

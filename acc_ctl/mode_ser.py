@@ -21,8 +21,8 @@ class ModesCtl(QtCore.QObject):
         super(ModesCtl, self).__init__()
 
         # create command and result channels
-        self.cmd_chan = cda.StrChan(ctl_server + ".modectl.cmd@u")
-        self.res_chan = cda.StrChan(ctl_server + ".modectl.res@u")
+        self.cmd_chan = cda.StrChan(ctl_server + ".modectl.cmd", on_update=True, privete=True)
+        self.res_chan = cda.StrChan(ctl_server + ".modectl.res", on_update=True, privete=True)
         self.cmd_chan.valueChanged.connect(self.cmd_cb)
         self.res_chan.valueMeasured.connect(self.res_cb)
 
@@ -96,7 +96,7 @@ class ModesClient(ModesCtl):
                                                  'types': types}))
 
 
-    def load_marked(self, mark_id, syslist, types):
+    def load_marked(self, mark_id, syslist, types=['rw']):
         self.cmd_chan.setValue(cmd_text('load marked', {'mark_id': mark_id,
                                                         'syslist': syslist,
                                                         'types': types}))

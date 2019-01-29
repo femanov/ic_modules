@@ -9,15 +9,15 @@ class Service:
         self.name = name
         self.f_log = open('/var/tmp/' + self.name + '.log', 'ab', 0)
         self.f_err = open('/var/tmp/' + self.name + '.err', 'ab', 0)
-        dcontext = daemon.DaemonContext(pidfile=pid.PidFile(self.name, '/var/tmp',),
+        self.dcontext = daemon.DaemonContext(pidfile=pid.PidFile(self.name, '/var/tmp',),
                                         stdout=self.f_log,
                                         stderr=self.f_err)
 
-        dcontext.signal_map = {
+        self.dcontext.signal_map = {
             signal.SIGTERM: self.exit_proc,
         }
 
-        with dcontext:
+        with self.dcontext:
             self.log_str('starting service: ' + self.name)
             self.pre_run()
             self.main()
@@ -50,6 +50,30 @@ class Service:
         pass
 
 
+class QtService(Service):
+    def __init__(self, name):
+        self.app = None
+        super(QtService, self).__init__(name)
+
+    def pre_run(self):
+        print('prerun')
+        global QtCore
+        import aQt.QtCore as QtCore
+
+        self.app = QtCore.QCoreApplication(sys.argv)
+        print(self.app)
+
+    def run_main_loop(self):
+        print('starting main loop')
+        print(self.app)
+        self.app.exec()
+
+
+    def quit_main_loop(self):
+        self.app.quit()
+
+
+
 class CothreadQtService(Service):
     def __init__(self, name):
         self.app = None
@@ -73,10 +97,12 @@ class CothreadQtService(Service):
 
 class CXService(Service):
     def run_main_loop(self):
+        global cda
         import pycx4.pycda as cda
         cda.main_loop()
 
     def quit_main_loop(self):
+        global cda
         import pycx4.pycda as cda
         cda.break_()
 
