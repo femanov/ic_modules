@@ -56,22 +56,16 @@ class QtService(Service):
         super(QtService, self).__init__(name)
 
     def pre_run(self):
-        print('prerun')
         global QtCore
         import aQt.QtCore as QtCore
 
         self.app = QtCore.QCoreApplication(sys.argv)
-        print(self.app)
 
     def run_main_loop(self):
-        print('starting main loop')
-        print(self.app)
         self.app.exec()
-
 
     def quit_main_loop(self):
         self.app.quit()
-
 
 
 class CothreadQtService(Service):
