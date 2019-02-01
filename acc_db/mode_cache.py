@@ -20,6 +20,9 @@ class SysCache:
     def cnames(self, syslist):
         ret = set()
         for x in syslist:
+            if x not in self.cache:
+                # it's happens if system not appeared in cache
+                continue
             ret = ret.union(self.cache[x])
         return ret
 
