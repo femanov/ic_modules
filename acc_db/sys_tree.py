@@ -16,8 +16,10 @@ modpath = os.path.dirname(os.path.realpath(__file__))
 class SysTree(QtWidgets.QTreeWidget):
     selectionChanged = QtCore.pyqtSignal(list)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, **kwargs):
         super(SysTree, self).__init__(parent)
+
+        self.show_devs = kwargs.get('show_devs', False)
 
         self.sel_icons = {
             0: QtGui.QIcon(modpath + '/img/icon_forb.jpg'),
@@ -51,6 +53,9 @@ class SysTree(QtWidgets.QTreeWidget):
             w.setToolTip(0, x.description)
 
         self.itemPressed.connect(self.item_click_cb)
+
+        # 2DO: add processing for show devises
+
 
         self.header().hide()
         self.setSelectionMode(0)
