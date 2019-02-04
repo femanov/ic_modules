@@ -22,6 +22,7 @@ class SysCache:
         for x in syslist:
             if x not in self.cache:
                 # it's happens if system not appeared in cache
+                print("requested subsys not found:", x)
                 continue
             ret = ret.union(self.cache[x])
         return ret
