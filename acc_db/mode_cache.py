@@ -7,7 +7,7 @@ class SysCache:
     def __init__(self, database=None):
         self.db = database
         if self.db is None:
-            self.db = ModesDB(mode_db_cfg)
+            self.db = ModesDB(**mode_db_cfg)
 
         self.cache = {}
         self.db.execute("select distinct unnest(systems) from fullchan where is_current")
@@ -22,7 +22,7 @@ class SysCache:
         for x in syslist:
             if x not in self.cache:
                 # it's happens if system not appeared in cache
-                print("requested subsys not found:", x)
+                #print("requested subsys not found:", x)
                 continue
             ret = ret.union(self.cache[x])
         return ret
@@ -33,7 +33,7 @@ class ModeCache:
         self.db = database
         self.name = name
         if self.db is None:
-            self.db = ModesDB(mode_db_cfg)
+            self.db = ModesDB(**mode_db_cfg)
 
         self.sys_cache = sys_cache
         if self.sys_cache is None:
