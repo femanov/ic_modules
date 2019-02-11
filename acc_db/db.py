@@ -77,3 +77,20 @@ class AccConfig(DBWrapper):
     def savable_access_kinds(self):
         self.execute("SELECT ARRAY(SELECT access FROM caccess_type WHERE savable)")
         return self.cur.fetchall()[0][0]
+
+    def sys_descendants(self, sys_name, **kwargs):
+        return_empty = kwargs.get('return_empty', True)
+        #sys_name = kwargs.get('sys_name', False)
+
+        if not sys_name:
+            return []
+
+        if return_empty:
+            self.execute('SELECT id from sys where path like'
+                         ' (select (path || %s) from sys where name=%s)', ('%', sys_name))
+        else:
+            self.execute('select id from sys where path like'
+                         ' (select(path || %s) from sys where name=%s and'
+                         ' exists(select id from sys_devs where sys_id = sys.id)', ('%', sys_name))
+
+        return [x[0] for x in self.cur.fetchall()]
