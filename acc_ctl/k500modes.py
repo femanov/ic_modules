@@ -13,9 +13,9 @@ remag_devs = ['d3m4n5', 'd5M1t4', 'd6M1t4']
 # hardcoded values for some energy
 remag_vals = {
     'e2v2': {'d3m4n5': 262.0, 'd5M1t4': -831.0, 'd6M1t4': -831.0},
-    'p2v2': {'d3m4n5': 0.0,   'd5M1t4': 839.0,  'd6M1t4': 838.0},
+    'p2v2': {'d3m4n5': 0.0, 'd5M1t4': 839.0, 'd6M1t4': 838.0},
     'e2v4': {'d3m4n5': 262.0, 'd5M1t4': -831.0, 'd6M1t4': 0.0},
-    'p2v4': {'d3m4n5': 0.0,   'd5M1t4': 839.0,  'd6M1t4': 0.0}
+    'p2v4': {'d3m4n5': 0.0, 'd5M1t4': 839.0, 'd6M1t4': 0.0}
 }
 
 remag_tolerance = 0.05

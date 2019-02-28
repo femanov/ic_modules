@@ -3,7 +3,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 
 
 def linbeam_state(cav_h_val):
-    if cav_h_val > 3000:
+    if cav_h_val > 0:
         return 'open'
     if cav_h_val < -3000:
         return 'closed'
