@@ -23,7 +23,7 @@ class MagWalker(QtCore.QObject):
         # walker.start - run process
         # walker.stop - stop running
         # walker.cur_step - current step, -1 when stopped (or finished)
-        self.list_chan = cda.VChan(devname + '.walker.list@u', None, cda.CXDTYPE_DOUBLE, 20)
+        self.list_chan = cda.VChan(devname + '.walker.list@u', cda.CXDTYPE_DOUBLE, 20)
         self.start_chan = cda.DChan(devname + '.walker.start@u')
         self.stop_chan = cda.DChan(devname + '.walker.stop@u')
         self.cur_step_chan = cda.DChan(devname + '.walker.cur_step@u')
