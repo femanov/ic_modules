@@ -62,7 +62,7 @@ class QtService(Service):
         self.app = QtCore.QCoreApplication(sys.argv)
 
     def run_main_loop(self):
-        self.app.exec()
+        self.app.exec_()
 
     def quit_main_loop(self):
         self.app.quit()
