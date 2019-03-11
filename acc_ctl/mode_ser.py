@@ -21,8 +21,8 @@ class ModesCtl(QtCore.QObject):
         super(ModesCtl, self).__init__()
 
         # create command and result channels
-        self.cmd_chan = cda.StrChan(ctl_server + ".modectl.cmd", on_update=True, privete=True)
-        self.res_chan = cda.StrChan(ctl_server + ".modectl.res", on_update=True, privete=True)
+        self.cmd_chan = cda.StrChan(ctl_server + ".modectl.cmd", max_nelems=1024, on_update=True, privete=True)
+        self.res_chan = cda.StrChan(ctl_server + ".modectl.res", max_nelems=1024, on_update=True, privete=True)
         self.cmd_chan.valueChanged.connect(self.cmd_cb)
         self.res_chan.valueMeasured.connect(self.res_cb)
 

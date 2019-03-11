@@ -23,15 +23,15 @@ class MagWalker(QtCore.QObject):
         # walker.start - run process
         # walker.stop - stop running
         # walker.cur_step - current step, -1 when stopped (or finished)
-        self.list_chan = cda.VChan(devname + '.walker.list@u', cda.CXDTYPE_DOUBLE, 20)
-        self.start_chan = cda.DChan(devname + '.walker.start@u')
-        self.stop_chan = cda.DChan(devname + '.walker.stop@u')
-        self.cur_step_chan = cda.DChan(devname + '.walker.cur_step@u')
-        self.iset_cur_chan = cda.DChan(devname + '.iset_cur@u')
-        self.iset_chan = cda.DChan(devname + '.iset@u')
+        self.list_chan = cda.VChan(devname + '.walker.list', dtype=cda.CXDTYPE_DOUBLE, max_nelems=20, on_update=True)
+        self.start_chan = cda.DChan(devname + '.walker.start', on_update=True)
+        self.stop_chan = cda.DChan(devname + '.walker.stop', on_update=True)
+        self.cur_step_chan = cda.DChan(devname + '.walker.cur_step', on_update=True)
+        self.iset_cur_chan = cda.DChan(devname + '.iset_cur', on_update=True)
+        self.iset_chan = cda.DChan(devname + '.iset', on_update=True)
 
         # just for some control
-        self.imeas_chan = cda.DChan(devname + '.imes@u')
+        self.imeas_chan = cda.DChan(devname + '.imes', on_update=True)
 
         self.initialized = False
         self.cur_list = None

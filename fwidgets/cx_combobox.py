@@ -26,7 +26,7 @@ class CXTextComboBox(QComboBox):
     def cx_connect(self):
         if self._cname is None:
             return
-        self.chan = cda.StrChan(self._cname, private=True)
+        self.chan = cda.StrChan(self._cname, max_nelems=1024, private=True)
         self.chan.valueChanged.connect(self.cs_update)
 
     @pyqtSlot(str)
@@ -55,5 +55,6 @@ class CXTextComboBox(QComboBox):
 
     def get_cname(self):
         return self._cname
+
 
     cname = pyqtProperty(str, get_cname, set_cname)
