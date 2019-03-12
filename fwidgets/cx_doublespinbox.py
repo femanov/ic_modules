@@ -4,11 +4,10 @@ from .fdoublespinbox import FDoubleSpinBox
 
 
 class CXDoubleSpinBox(FDoubleSpinBox):
-    def __init__(self, parent=None, cname=None):
-        super(CXDoubleSpinBox, self).__init__(parent)
-        self.valueChanged.connect(self.done)
+    def __init__(self, parent=None, **kwargs):
+        super(CXDoubleSpinBox, self).__init__(parent, **kwargs)
+        self._cname = kwargs.get('cname', None)
         self.chan = None
-        self._cname = cname
         self.cx_connect()
         self.done.connect(self.cs_send)
 
@@ -35,7 +34,7 @@ class CXDoubleSpinBox(FDoubleSpinBox):
             return
         self.setValue(chan.val)
 
-    @pyqtSlot(float)
+    @pyqtSlot(str)
     def setCname(self, cname):
         if self._cname == cname:
             return

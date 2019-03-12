@@ -1,11 +1,11 @@
 from aQt.QtWidgets import QCheckBox
 from aQt.QtCore import pyqtSlot, pyqtProperty, pyqtSignal
 
-class FCheckBox(QCheckBox):
 
+class FCheckBox(QCheckBox):
     done = pyqtSignal(bool)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, **kwargs):
         super(FCheckBox, self).__init__(parent)
         self.clicked.connect(self.done)
 

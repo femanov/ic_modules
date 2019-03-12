@@ -17,11 +17,12 @@ from aQt.QtWidgets import QDoubleSpinBox
 class FDoubleSpinBox(QDoubleSpinBox):
     done = pyqtSignal(float)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, **kwargs):
         super(FDoubleSpinBox, self).__init__(parent)
         self.valueChanged.connect(self.done)
-        self.setMinimum(-100000.0)
-        self.setMaximum(100000.0)
+        self.setMinimum(kwargs.get('min', -100000.0))
+        self.setMaximum(kwargs.get('max', 100000.0))
+
         self.setFocusPolicy(Qt.StrongFocus)
 
     def wheelEvent(self, event):

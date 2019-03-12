@@ -4,15 +4,13 @@ from .fspinbox import FSpinBox
 
 
 class CXSpinBox(FSpinBox):
-    def __init__(self, parent=None, cname=None):
-        super(CXSpinBox, self).__init__(parent)
-        self.valueChanged.connect(self.done)
+    def __init__(self, parent=None, **kwargs):
+        super(CXSpinBox, self).__init__(parent, **kwargs)
+        self._cname = kwargs.get('cname', None)
         self.chan = None
-        self._cname = cname
+
         self.cx_connect()
-
         self.done.connect(self.cs_send)
-
 
     def mousePressEvent(self, QMouseEvent):
         if QMouseEvent.button() == Qt.LeftButton:
@@ -20,7 +18,6 @@ class CXSpinBox(FSpinBox):
         elif QMouseEvent.button() == Qt.RightButton:
             #do what you want here
             print("Right Button Clicked")
-
 
     def cx_connect(self):
         if self._cname is None:

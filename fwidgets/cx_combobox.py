@@ -1,6 +1,6 @@
 from aQt.QtWidgets import QComboBox
-from aQt.QtGui import QIcon
-from aQt.QtCore import pyqtSlot, pyqtProperty
+from aQt.QtGui import QIcon, QColor
+from aQt.QtCore import pyqtSlot, pyqtProperty, Qt
 import pycx4.qcda as cda
 
 
@@ -9,6 +9,7 @@ class CXTextComboBox(QComboBox):
         super(CXTextComboBox, self).__init__(*args)
         self._cname = kwargs.get('cname', None)
         self._values = ['none'] + kwargs.get('values', [])
+        self._colors = [None] + kwargs.get('colors', [])
         self._icons = kwargs.get('icons', None)
         self._max_len = kwargs.get('max_len', max([len(x) for x in self._values]))
 
@@ -19,10 +20,19 @@ class CXTextComboBox(QComboBox):
             self.insertItem(x, self._values[x])
             if self._icons is not None and x > 0:
                 self.setItemIcon(x, QIcon(self._icons[x-1]))
+            if x < len(self._colors):
+                if self._colors[x] is not None:
+                    self.setItemData(x, QColor(self._colors[x]), Qt.BackgroundRole)
 
         self.model().item(0).setEnabled(False)
         # keep next after all
         self.currentIndexChanged.connect(self.cs_send)
+        self.currentIndexChanged.connect(self.update_bgcolor)
+
+    def update_bgcolor(self, ind):
+        if ind < len(self._colors):
+            if self._colors[ind] is not None:
+               self.setStyleSheet('QComboBox {background: ' + self._colors[ind] + ";}")
 
     def cx_connect(self):
         if self._cname is None:

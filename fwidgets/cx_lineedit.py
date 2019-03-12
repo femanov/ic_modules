@@ -1,5 +1,7 @@
 from aQt.QtWidgets import QLineEdit
+from aQt.QtCore import pyqtSlot, pyqtProperty
 import pycx4.qcda as cda
+
 
 class CXLineEdit(QLineEdit):
     def __init__(self, *args, **kwargs):
@@ -20,14 +22,30 @@ class CXLineEdit(QLineEdit):
         if self.text() != chan.val:
             self.setText(chan.val)
 
+    @pyqtSlot(str)
+    def cs_send(self, value):
+        self.chan.setValue(value)
+
+    @pyqtSlot(str)
     def set_cname(self, cname):
-        pass
+        if self._cname == cname:
+            return
+        self._cname = cname
+        self.cx_connect()
 
     def get_cname(self):
-        pass
+        return self._cname
 
-    def set_max_len(self):
-        pass
+    cname = pyqtProperty(str, get_cname, set_cname)
+
+    def set_max_len(self, max_len):
+        if self._max_len == max_len:
+            return
+        self._max_len = max_len
+        self.cx_connect()
 
     def get_max_len(self):
-        pass
+        return self._max_len
+
+    max_len = pyqtProperty(int, get_cname, set_cname)
+
