@@ -10,6 +10,7 @@ class CXTextComboBox(QComboBox):
         self._cname = kwargs.get('cname', None)
         self._values = ['none'] + kwargs.get('values', [])
         self._icons = kwargs.get('icons', None)
+        self._max_len = kwargs.get('max_len', max([len(x) for x in self._values]))
 
         self.chan = None
         self.cx_connect()
@@ -26,7 +27,7 @@ class CXTextComboBox(QComboBox):
     def cx_connect(self):
         if self._cname is None:
             return
-        self.chan = cda.StrChan(self._cname, max_nelems=1024, private=True)
+        self.chan = cda.StrChan(self._cname, max_nelems=self._max_len, private=True)
         self.chan.valueChanged.connect(self.cs_update)
 
     @pyqtSlot(str)
