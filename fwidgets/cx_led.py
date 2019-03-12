@@ -1,9 +1,7 @@
 from aQt.QtGui import QColor
 from aQt.QtCore import QTimer
 import pycx4.qcda as cda
-
 from .ledwidget import LedWidget
-
 
 
 class CXEventLed(LedWidget):

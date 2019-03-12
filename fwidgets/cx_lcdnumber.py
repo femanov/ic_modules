@@ -4,11 +4,10 @@ import pycx4.qcda as cda
 
 
 class CXLCDNumber(QLCDNumber):
-    def __init__(self, parent=None, cname=None):
+    def __init__(self, parent=None, **kwargs):
         super(CXLCDNumber, self).__init__(parent)
-
+        self._cname = kwargs.get('cname', None)
         self.chan = None
-        self._cname = cname
         self.cx_connect()
 
     def cx_connect(self):
