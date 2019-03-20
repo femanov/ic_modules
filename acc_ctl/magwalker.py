@@ -1,4 +1,3 @@
-
 from aux.Qt import QtCore
 import pycx4.qcda as cda
 import numpy as np

@@ -68,7 +68,6 @@ class K500Director(QObject):
             if self.walkers[k].running:
                 return
         self.swc_time = time.time() - self.start_time
-        print('swc_time', self.swc_time)
         self.running = False
         self.progress = 0
         self.progressing.emit(100)

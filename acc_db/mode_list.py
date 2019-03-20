@@ -5,10 +5,9 @@ from aux.Qt import QtGui, QtCore, QtWidgets
 from fwidgets.auxwidgets import BaseGridW
 from fwidgets.fspinbox import FSpinBox
 
-from acc_ctl.mode_defs import mode_colors, rev_mode_map, mode_map
+from acc_ctl.mode_defs import mode_colors  # , rev_mode_map, mode_map
 
-from settings.db import mode_db_cfg
-from acc_db.mode_db import ModesDB
+from acc_db.db import ModesDB
 
 from aux import str2u
 
@@ -28,7 +27,7 @@ class ModeList(QtWidgets.QTableWidget):
         super(ModeList, self).__init__(parent)
         self.modes_db = kwargs.get('db')
         if self.modes_db is None:
-            self.modes_db = ModesDB(**mode_db_cfg)
+            self.modes_db = ModesDB()
 
         self.selected_row = None
         self.modes = None
@@ -200,16 +199,15 @@ class ModeListBControls(BaseGridW):
         self.grid.addWidget(QtWidgets.QLabel("mark"), 0, 0, 2, 1)
 
         self.buttons = []
-        self.m_names = rev_mode_map[1:]
-        m_len = len(self.m_names)
-        rows = 2
-        rlen = math.ceil(m_len/rows)
+        self.marks = ['einj', 'eext', 'pinj', 'pext', 'e2v4', 'p2v4', 'e2v2', 'p2v2']
+        m_len = len(self.marks)
+        rlen = 4
         crow = 0
         for ind in range(m_len):
             if ind == rlen:
                 crow += 1
-            btn = QtWidgets.QPushButton(self.m_names[ind])
-            btn.setStyleSheet("background-color: " + mode_colors[self.m_names[ind]])
+            btn = QtWidgets.QPushButton(self.marks[ind])
+            btn.setStyleSheet("background-color: " + mode_colors[self.marks[ind]])
             btn.setFixedWidth(100)
             self.grid.addWidget(btn, crow, ind - crow * rlen + 1)
             self.buttons.append(btn)
@@ -230,7 +228,7 @@ class ModeListBControls(BaseGridW):
 
     def buttons_cb(self):
         ind = self.buttons.index(self.sender())
-        self.mark.emit(self.m_names[ind])
+        self.mark.emit(self.marks[ind])
 
 
 class ModeListSaveBlock(BaseGridW):
@@ -266,13 +264,13 @@ class ModeListSaveBlock(BaseGridW):
 
 
 class ModeListFull(BaseGridW):
-    markMode = QtCore.pyqtSignal(int, str, str, str, int)  # mode_id, mark_id
+    markMode = QtCore.pyqtSignal(int, str, str, str)  # mode_id, mark_id
     saveMode = QtCore.pyqtSignal(str, str)  # author, comment
     outMsg = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(ModeListFull, self).__init__(parent)
-        self.modes_db = ModesDB(**mode_db_cfg)
+        self.modes_db = ModesDB()
 
         self.filterw = ModeListFilter()
         self.grid.addWidget(self.filterw, 0, 0)
@@ -303,7 +301,7 @@ class ModeListFull(BaseGridW):
         self.selected_mode = mode_id
 
     def mark_cb(self, mark):
-        self.markMode.emit(self.selected_mode, mark, 'saver', 'automatic mode', mode_map[mark])
+        self.markMode.emit(self.selected_mode, mark, 'saver', 'automatic mode')
 
     def update_modenum(self):
         self.modes_db.execute("select count(id) from mode")

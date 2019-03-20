@@ -3,19 +3,20 @@
 # ic operation modes are here.
 # idle - is doing nothing
 # None - not in this map. None means that we don't know mode due to any reason
-mode_map = {
-    'idle': 0,
-    'einj': 1,
-    'eext': 2,
-    'pinj': 3,
-    'pext': 4,
-    'e2v4': 5,
-    'p2v4': 6,
-    'e2v2': 7,
-    'p2v2': 8,
-}
-
-rev_mode_map = ['idle', 'einj', 'eext', 'pinj', 'pext', 'e2v4', 'p2v4', 'e2v2', 'p2v2']
+# mode_map = {
+#     'idle': 0,
+#     'einj': 1,
+#     'eext': 2,
+#     'pinj': 3,
+#     'pext': 4,
+#     'e2v4': 5,
+#     'p2v4': 6,
+#     'e2v2': 7,
+#     'p2v2': 8,
+#     None  : 0
+# }
+#
+# rev_mode_map = ['idle', 'einj', 'eext', 'pinj', 'pext', 'e2v4', 'p2v4', 'e2v2', 'p2v2']
 
 mode_colors = {
     None  : '#ffffff',

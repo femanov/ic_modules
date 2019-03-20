@@ -1,13 +1,10 @@
-from settings.db import mode_db_cfg
-from acc_db.mode_db import ModesDB
+from acc_db.db import ModesDB
 
 # this creates a cache of sys to cnames on init
 # than can be used to select names
 class SysCache:
-    def __init__(self, database=None):
-        self.db = database
-        if self.db is None:
-            self.db = ModesDB(**mode_db_cfg)
+    def __init__(self, **kwargs):
+        self.db = kwargs.get('db', ModesDB())
 
         self.cache = {}
         self.db.execute("select distinct unnest(systems) from fullchan where is_current")
@@ -29,18 +26,14 @@ class SysCache:
 
 
 class ModeCache:
-    def __init__(self, mark_id, database=None, sys_cache=None, name=None):
-        self.db = database
-        self.name = name
-        if self.db is None:
-            self.db = ModesDB(**mode_db_cfg)
+    def __init__(self, mark, **kwargs):
+        self.db = kwargs.get('db', ModesDB())
+        self.sys_cache = kwargs.get('sys_cache', SysCache(db=self.db))
 
-        self.sys_cache = sys_cache
-        if self.sys_cache is None:
-            self.sys_cache = SysCache(self.db)
+        self.name = mark
 
         # loading mode for ["rw"] type of channels
-        self.mode_data = self.db.load_mode_bymark(mark_id, self.sys_cache.sys)
+        self.mode_data = self.db.load_mode_bymarkt(mark, self.sys_cache.sys)
         # modedata: protocol, chan_name, value
 
         # create a

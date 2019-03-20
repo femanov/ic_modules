@@ -2,10 +2,11 @@ import daemon
 import signal
 import sys
 import pid
-import time
+from datetime import datetime
+import builtins
 
 class Service:
-    def __init__(self, name):
+    def __init__(self, name, **kwargs):
         self.name = name
         self.f_log = open('/var/tmp/' + self.name + '.log', 'ab', 0)
         self.f_err = open('/var/tmp/' + self.name + '.err', 'ab', 0)
@@ -17,6 +18,11 @@ class Service:
             signal.SIGTERM: self.exit_proc,
         }
 
+        redef_print = kwargs.get('redef_print', False)
+        self.print = builtins.print
+        if redef_print:
+            builtins.print = self.log_str
+
         with self.dcontext:
             self.log_str('starting service: ' + self.name)
             self.pre_run()
@@ -26,12 +32,10 @@ class Service:
     def exit_proc(self, signum, frame):
         self.log_str('signal recieved: %d, %s' % (signum, frame))
         self.clean_proc()
-        sys.stdout.flush()
         self.quit_main_loop()
 
-    def log_str(self, msg):
-        print(time.time(), ': ', msg)
-        sys.stdout.flush()
+    def log_str(self, *args):
+        self.print(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"), ': ', *args, flush=True)
 
     def run_main_loop(self):
         pass
@@ -51,9 +55,9 @@ class Service:
 
 
 class QtService(Service):
-    def __init__(self, name):
+    def __init__(self, name, **kwargs):
         self.app = None
-        super(QtService, self).__init__(name)
+        super(QtService, self).__init__(name, **kwargs)
 
     def pre_run(self):
         global QtCore
@@ -69,9 +73,9 @@ class QtService(Service):
 
 
 class CothreadQtService(Service):
-    def __init__(self, name):
+    def __init__(self, name, **kwargs):
         self.app = None
-        super(CothreadQtService, self).__init__(name)
+        super(CothreadQtService, self).__init__(name, **kwargs)
 
     def run_main_loop(self):
         global cothread

@@ -4,7 +4,6 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
 import fwidgets as fw
 
-from settings.db import acc_cfg
 from acc_db.db import AccConfig
 
 
@@ -17,7 +16,7 @@ class KindTable(QTableWidget):
         self.horizontalHeader().setVisible(False)
 
         # database connect
-        self.db = AccConfig(**acc_cfg)
+        self.db = AccConfig()
         self.kinds = self.db.savable_access_kinds()
         self.checkers = []
 

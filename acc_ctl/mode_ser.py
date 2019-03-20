@@ -39,7 +39,6 @@ class ModesClient(ModesCtl):
     modeLoaded = QtCore.pyqtSignal(dict)  # emited when recieved deamon mesage "mode"
 
     # signals for automatic control
-    markedLoad = QtCore.pyqtSignal(int)  # emited when switching to marked mode
     markedLoaded = QtCore.pyqtSignal(str)   # emited when switched to marked mode
     markedReady = QtCore.pyqtSignal()
     walkerDone = QtCore.pyqtSignal(str)
@@ -50,8 +49,7 @@ class ModesClient(ModesCtl):
     def __init__(self, use_modeswitcher=False):
         super(ModesClient, self).__init__()
 
-        # e_inj = 1, e_ext = 2, p_inj = 3, p_ext = 4
-        self.mode = None
+        self.mode_mark = None
         self.timer = QtCore.QTimer()
         self.delay = 100
 
@@ -73,7 +71,7 @@ class ModesClient(ModesCtl):
             self.update.emit()
 
         if cdict['cmd'] == 'marked loaded':
-            self.mode = cdict['mark_id']
+            self.mode_mark = cdict['mark']
             self.markedLoaded.emit(cdict['msg'])
             self.timer.singleShot(self.delay, self.emitMarkedReady)
             # 2do: not fully correct in case of user request during this wait. can be a race conditions
@@ -96,28 +94,26 @@ class ModesClient(ModesCtl):
                                                  'types': types}))
 
 
-    def load_marked(self, mark_id, syslist, types=['rw']):
-        self.cmd_chan.setValue(cmd_text('load marked', {'mark_id': mark_id,
+    def load_marked(self, mark, syslist, types=['rw']):
+        self.cmd_chan.setValue(cmd_text('load marked', {'mark': mark,
                                                         'syslist': syslist,
                                                         'types': types}))
 
-    def mark_mode(self, mode_id, name, comment, author, mark_id):
+    def mark_mode(self, mode_id, mark, comment, author):
         self.cmd_chan.setValue(cmd_text('mark mode', {'mode_id': mode_id,
-                                                      'name': name,
+                                                      'mark': mark,
                                                       'comment': comment,
-                                                      'author': author,
-                                                      'mark_id': mark_id}))
+                                                      'author': author}))
 
     def walker_load(self, walkers_path):
         self.cmd_chan.setValue(cmd_text('walker load', {'walkers_path': walkers_path}))
 
 
-
 class ModesServer(ModesCtl):
     save = QtCore.pyqtSignal(str, str)
     load = QtCore.pyqtSignal(int, list, list)
-    loadMarked = QtCore.pyqtSignal(int, list, list)
-    markMode = QtCore.pyqtSignal(int, str, str, str, int)
+    loadMarked = QtCore.pyqtSignal(str, list, list)
+    markMode = QtCore.pyqtSignal(int, str, str, str)
     walkerLoad = QtCore.pyqtSignal(dict)
 
     def __init__(self):
@@ -138,10 +134,10 @@ class ModesServer(ModesCtl):
             self.save.emit(cdict['author'], cdict['comment'])
 
         if cdict['cmd'] == 'load marked':
-            self.loadMarked.emit(cdict['mark_id'], cdict['syslist'], cdict['types'])
+            self.loadMarked.emit(cdict['mark'], cdict['syslist'], cdict['types'])
 
         if cdict['cmd'] == 'mark mode':
-            self.markMode.emit(cdict['mode_id'], cdict['name'], cdict['comment'], cdict['author'], cdict['mark_id'])
+            self.markMode.emit(cdict['mode_id'], cdict['mark'], cdict['comment'], cdict['author'])
 
         if cdict['cmd'] == 'walker load':
             self.walkerLoad.emit(cdict['walkers_path'])
@@ -157,8 +153,8 @@ class ModesServer(ModesCtl):
     def update(self):
         self.res_chan.setValue(cmd_text('update', {}))
 
-    def markedLoaded(self, mark_id, msg):
-        self.res_chan.setValue(cmd_text('marked loaded', {'mark_id': mark_id, 'msg': msg}))
+    def markedLoaded(self, mark, msg):
+        self.res_chan.setValue(cmd_text('marked loaded', {'mark': mark, 'msg': msg}))
 
     def walkerDone(self, name):
         self.res_chan.setValue(cmd_text('walker done', {'name': name}))
