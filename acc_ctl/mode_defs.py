@@ -103,27 +103,12 @@ path_set = {
     ],
 }
 
-def mode_name(id):
-    try:
-        return rev_mode_map[id]
-    except IndexError:
-        return None
-
-def mode_id(name):
-    if name in mode_map:
-        return mode_map[name]
-    return -1
 
 # None mode neams unknown
 def mode_path(mag_name, start_mode, target_mode):
     for x in path_set[mag_name]:
         if x[0] == start_mode and x[-1] == target_mode:
             return x
-
-def mode_path_num(mag_name, start_mode_num, target_mode_num):
-
-    path = mode_path(mag_name, rev_mode_map[start_mode_num], rev_mode_map[target_mode_num])
-    return [mode_map[x] for x in path]
 
 
 def particles_std(particles):
@@ -154,7 +139,3 @@ def use_case(particles, beam_user):
     p = particles_std(particles)
     u = beam_user_short(beam_user)
     return p + '2' + u
-
-
-def mode_num(particles, beam_user):
-    return mode_map[use_case(particles, beam_user)]

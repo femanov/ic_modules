@@ -116,7 +116,7 @@ class ModesDB(DBWrapper):
 
 
     def mode_chans(self):
-        self.execute("SELECT protocol, cur_chan_name, id from fullchan WHERE is_current")
+        self.execute("SELECT protocol, cur_chan_name, id from fullchan WHERE is_current ORDER BY namesys_id,dev_id,chan_id")
         return self.cur.fetchall()
 
     def mode_list(self, limit=100, offset=0, like=None, load_archived=False):
@@ -146,7 +146,7 @@ class ModesDB(DBWrapper):
     def archive_mode(self, mode_id):
         self.execute('UPDATE mode SET archived=true WHERE id=%s', (mode_id,))
 
-    def mark_mode(self, mode_id, name, comment, author, mark_id=0):
+    def mark_mode_old(self, mode_id, name, comment, author, mark_id=0):
         self.execute("SELECT mark_mode(%s, %s, %s, %s, %s)", (mode_id, name, comment, author, mark_id))
 
     def save_mode(self, author, comment, data):
@@ -172,16 +172,17 @@ class ModesDB(DBWrapper):
         self.execute("SELECT * FROM load_mode(%s, %s, %s) ", (mode_id, sysid_list, load_types))
         return self.cur.fetchall()
 
-    def load_mode_bymark(self, mark_id, sysid_list, load_type=['rw']):
+    def load_mode_bymark_old(self, mark_id, sysid_list, load_type=['rw']):
         self.execute("select * FROM load_mode_bymark(%s, %s, %s)", (mark_id, sysid_list, load_type))
         return self.cur.fetchall()
 
-    def load_mode_bymarkt(self, mark_name, sysid_list, load_type=['rw']):
+    def load_mode_bymark(self, mark_name, sysid_list, load_type=['rw']):
+        print("loading mode by mark: ", mark_name, sysid_list, load_type)
         self.execute("select * FROM load_mode_bymarkt(%s, %s, %s)", (mark_name, sysid_list, load_type))
         return self.cur.fetchall()
 
-    def mark_modet(self, mode_id, name, comment, author):
-        self.execute("SELECT mark_modet(%s, %s, %s, %s, %s)", (mode_id, name, comment, author))
+    def mark_mode(self, mode_id, name, comment, author):
+        self.execute("SELECT mark_modet(%s, %s, %s, %s)", (mode_id, name, comment, author))
 
     def get_marks(self):
         self.execute("SELECT name from modemark ORDER BY id")

@@ -33,7 +33,7 @@ class ModeCache:
         self.name = mark
 
         # loading mode for ["rw"] type of channels
-        self.mode_data = self.db.load_mode_bymarkt(mark, self.sys_cache.sys)
+        self.mode_data = self.db.load_mode_bymark(mark, self.sys_cache.sys)
         # modedata: protocol, chan_name, value
 
         # create a

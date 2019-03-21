@@ -104,10 +104,10 @@ class K500Director(QObject):
             self.progress = all_prg
             self.progressing.emit(all_prg)
 
-    def set_mode(self, target_mode_id):
-        cur_mode_id = mode_map[self.cur_mode]
-        if target_mode_id == cur_mode_id:
+    def set_mode(self, target_mode):
+        if target_mode == self.cur_mode:
             return
-        mag_path = {name: mode_path_num(name, cur_mode_id, target_mode_id) for name in remag_devs}
+        mag_path = {name: mode_path(name, self.cur_mode, target_mode) for name in remag_devs}
+        print(mag_path)
         self.mode_ctl.walker_load(mag_path)
 

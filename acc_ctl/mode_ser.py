@@ -53,6 +53,8 @@ class ModesClient(ModesCtl):
         self.timer = QtCore.QTimer()
         self.delay = 100
 
+        self.proto_ver = 0.9
+
     def res_cb(self, chan):
         try:
             cdict = json.loads(chan.val)
