@@ -122,22 +122,22 @@ class ModesDB(DBWrapper):
     def mode_list(self, limit=100, offset=0, like=None, load_archived=False):
         if like is None:
             if load_archived:
-                self.execute("SELECT id,author,comment,stime FROM mode ORDER BY stime DESC LIMIT %s OFFSET %s",(limit, offset))
+                self.execute("SELECT id,author,comment,stime,info FROM mode ORDER BY stime DESC LIMIT %s OFFSET %s",(limit, offset))
             else:
-                self.execute("SELECT id,author,comment,stime FROM mode WHERE archived=false ORDER BY stime DESC LIMIT %s OFFSET %s",(limit, offset))
+                self.execute("SELECT id,author,comment,stime,info FROM mode WHERE archived=false ORDER BY stime DESC LIMIT %s OFFSET %s",(limit, offset))
         else:
             if load_archived:
-                self.execute("SELECT id,author,comment,stime FROM mode"
+                self.execute("SELECT id,author,comment,stime,info FROM mode"
                              " WHERE author ILIKE %s or comment ILIKE %s ORDER BY stime DESC LIMIT %s OFFSET %s",
                              (like, like, limit, offset))
             else:
-                self.execute("SELECT id,author,comment,stime FROM mode"
+                self.execute("SELECT id,author,comment,stime,info FROM mode"
                              " WHERE archived=false and (author ILIKE %s or comment ILIKE %s) ORDER BY stime DESC LIMIT %s OFFSET %s",
                              (like, like, limit, offset))
         return self.cur.fetchall()
 
     def marked_modes(self, mark_ids):
-        self.execute("SELECT mode.id,mode.author,mode.comment,mode.stime,modemark.name FROM mode"
+        self.execute("SELECT mode.id,mode.author,mode.comment,mode.stime,info,modemark.name FROM mode"
                     " LEFT JOIN modemark on mode.id = modemark.mode_id"
                     " WHERE modemark.id = ANY(%s) ORDER BY mode.stime DESC", (mark_ids,))
         return self.cur.fetchall()
@@ -150,8 +150,8 @@ class ModesDB(DBWrapper):
         self.execute("SELECT mark_mode(%s, %s, %s, %s, %s)", (mode_id, name, comment, author, mark_id))
 
     def save_mode(self, author, comment, data):
-        self.execute("INSERT INTO mode(author,comment,stime,archived) values(%s,%s,now(),false) RETURNING id",
-                     (author, comment,))
+        self.execute("INSERT INTO mode(author,comment,stime,info,archived) values(%s,%s,now(),%s,false) RETURNING id",
+                     (author, comment, {}))
         mode_id = self.cur.fetchone()[0]
 
         f_data = BytesIO()
