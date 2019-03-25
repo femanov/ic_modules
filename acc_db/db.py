@@ -3,6 +3,7 @@ import time
 from io import BytesIO
 
 import psycopg2.extensions
+from psycopg2.extras import Json
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
@@ -150,8 +151,8 @@ class ModesDB(DBWrapper):
         self.execute("SELECT mark_mode(%s, %s, %s, %s, %s)", (mode_id, name, comment, author, mark_id))
 
     def save_mode(self, author, comment, data):
-        self.execute("INSERT INTO mode(author,comment,stime,info,archived) values(%s,%s,now(),\{\},false) RETURNING id",
-                     (author, comment,))
+        self.execute("INSERT INTO mode(author,comment,stime,info,archived) values(%s,%s,now(),%s,false) RETURNING id",
+                     (author, comment, Json('{}')))
         mode_id = self.cur.fetchone()[0]
 
         f_data = BytesIO()
