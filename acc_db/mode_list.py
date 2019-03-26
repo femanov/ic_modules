@@ -22,6 +22,7 @@ from aux import str2u
 
 class ModeList(QtWidgets.QTableWidget):
     modeSelected = QtCore.pyqtSignal(int)
+    modeUpdated = QtCore.pyqtSignal()
 
     def __init__(self, parent=None, **kwargs):
         super(ModeList, self).__init__(parent)
@@ -32,20 +33,40 @@ class ModeList(QtWidgets.QTableWidget):
         self.selected_row = None
         self.modes = None
         self.marked_modes = None
+        self.all_modes = None
 
         self.cellClicked.connect(self.mode_select)
+        self.cellChanged.connect(self.item_edit_proc)
+        self.updating_list = False
 
         self.horizontalHeader().hide()
         self.verticalHeader().hide()
         self.setColumnCount(5)
+        self.setColumnWidth(0, 130)
+        self.setColumnWidth(1, 400)
+        self.setColumnWidth(2, 220)
+        self.setColumnWidth(3, 60)
+        self.setColumnWidth(4, 60)
 
         self.update_modelist(update_marked=True)
 
         self.background_color = self.item(0, 0).background()
-        self.selected_color = QtGui.QColor(0, 255, 255)
+        self.selected_color = QtGui.QColor(200, 255, 255)
 
-    #update_marked, offset, limit, filter
+    def item_edit_proc(self, row, col):
+        if self.updating_list or col > 1:
+            return
+        c_text = self.item(row, col).text()
+        if c_text != self.all_modes[row][col+1]:
+            if col == 0:
+                self.modes_db.update_mode(self.all_modes[row][0], author=c_text)
+            if col == 1:
+                self.modes_db.update_mode(self.all_modes[row][0], comment=c_text)
+            self.all_modes[row][col+1] = c_text
+            self.modeUpdated.emit()
+
     def update_modelist(self, **kwargs):
+        self.updating_list = True
         limit = kwargs.get('limit', 100)
         offset = kwargs.get('offset', 0)
         update_marked = kwargs.get('update_marked', False)
@@ -53,12 +74,11 @@ class ModeList(QtWidgets.QTableWidget):
         load_archived = kwargs.get('load_archived', False)
 
         if update_marked:
-            self.marked_modes = self.modes_db.marked_modes([1, 2, 3, 4, 5, 6, 7, 8])
+            self.marked_modes = [list(x) for x in self.modes_db.marked_modes([1, 2, 3, 4, 5, 6, 7, 8])]
 
-        self.modes = self.modes_db.mode_list(limit, offset, filter, load_archived)
+        self.modes = [list(x) for x in self.modes_db.mode_list(limit, offset, filter, load_archived)]
 
         self.all_modes = self.marked_modes + self.modes
-
         self.setRowCount(len(self.all_modes))
         for ind in range(len(self.all_modes)):
             row = self.all_modes[ind]
@@ -68,15 +88,15 @@ class ModeList(QtWidgets.QTableWidget):
                 else:
                     rtext = row[rind]
                 item = QtWidgets.QTableWidgetItem(rtext)
-                item.setFlags(QtCore.Qt.ItemIsEnabled)
+                #item.setFlags(QtCore.Qt.ItemIsEditable)
                 self.setItem(ind, rind-1, item)
                 if rind == 4 or rind == 5:
-                    item.setBackground(QtGui.QColor(mode_colors[row[rind]]))
+                    item.setBackground(QtGui.QColor(mode_colors.get(rtext, "#fafafa")))
 
         self.resizeRowsToContents()
-        self.resizeColumnsToContents()
 
         self.selected_row = None
+        self.updating_list = False
 
     def mode_select(self, row, col):
         if self.selected_row is not None:
@@ -331,7 +351,7 @@ if __name__ == '__main__':
     # w2.markMode.connect(print)
 
     w3 = ModeListFull()
-    w3.resize(800, 800)
+    w3.resize(900, 800)
     w3.show()
     w3.markMode.connect(print)
 

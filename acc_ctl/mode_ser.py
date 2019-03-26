@@ -110,6 +110,9 @@ class ModesClient(ModesCtl):
     def walker_load(self, walkers_path):
         self.cmd_chan.setValue(cmd_text('walker load', {'walkers_path': walkers_path}))
 
+    def ask_update(self):
+        self.res_chan.setValue(cmd_text('update', {}))
+
 
 class ModesServer(ModesCtl):
     save = QtCore.pyqtSignal(str, str)

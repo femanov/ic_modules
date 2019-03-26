@@ -164,7 +164,11 @@ class ModesDB(DBWrapper):
         # !! warning, no reconnection for this proc implemented
         # request to db, but connection should work from previous requests in this function
         self.cur.copy_from(f_data, 'modedata', size=io_size, columns=cols)
-        #self.execute("update mode set info = (info || jsonb_build_object($1, $2)) where id=$3", ['character varying','character varying', 'integer'])
+
+        # may be update mode just here?
+        #self.execute("update mode set info = info || jsonb_build_object('type', calc_mode_type(id)) where id=%s",
+        # (mode_id,))
+
         f_data.close()
         return mode_id
 
@@ -177,7 +181,6 @@ class ModesDB(DBWrapper):
         return self.cur.fetchall()
 
     def load_mode_bymark(self, mark_name, sysid_list, load_type=['rw']):
-        print("loading mode by mark: ", mark_name, sysid_list, load_type)
         self.execute("select * FROM load_mode_bymarkt(%s, %s, %s)", (mark_name, sysid_list, load_type))
         return self.cur.fetchall()
 
@@ -188,3 +191,7 @@ class ModesDB(DBWrapper):
         self.execute("SELECT name from modemark ORDER BY id")
         return [x[0] for x in self.cur.fetchall()]
 
+    def update_mode(self, id, **kwargs):
+        ks = kwargs.keys()
+        req = "update mode set " + "=%s,".join(ks) + '=%s where id=%s'
+        self.execute(req, [kwargs[k] for k in ks] + [id])
