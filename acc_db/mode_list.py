@@ -26,9 +26,7 @@ class ModeList(QtWidgets.QTableWidget):
 
     def __init__(self, parent=None, **kwargs):
         super(ModeList, self).__init__(parent)
-        self.modes_db = kwargs.get('db')
-        if self.modes_db is None:
-            self.modes_db = ModesDB()
+        self.modes_db = kwargs.get('db', ModesDB())
 
         self.selected_row = None
         self.modes = None
@@ -212,6 +210,7 @@ class ModeListFilter(BaseGridW):
 class ModeListBControls(BaseGridW):
     mark = QtCore.pyqtSignal(str)
     load = QtCore.pyqtSignal()
+    archive = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(ModeListBControls, self).__init__(parent)
@@ -240,6 +239,7 @@ class ModeListBControls(BaseGridW):
         self.grid.addWidget(self.btn_archive, 0, rlen + 3)
         self.btn_archive.setStyleSheet("background-color: red")
         self.btn_archive.setFixedWidth(110)
+        self.btn_archive.clicked.connect(self.archive)
 
         self.btn_load = QtWidgets.QPushButton('Load')
         self.grid.addWidget(self.btn_load, 0, rlen + 4)
