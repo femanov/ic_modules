@@ -150,7 +150,7 @@ class ModesDB(DBWrapper):
         self.execute("SELECT mark_mode(%s, %s, %s, %s, %s)", (mode_id, name, comment, author, mark_id))
 
     def save_mode(self, author, comment, data):
-        self.execute("INSERT INTO mode(author,comment,stime,info,archived) values(%s,%s,now(),jsonb_build_object(),false) RETURNING id",
+        self.execute("INSERT INTO mode(author,comment,stime,info,archived) values(%s,%s,now(),jsonb_build_object('init',1),false) RETURNING id",
                      (author, comment))
         mode_id = self.cur.fetchone()[0]
 
@@ -164,7 +164,7 @@ class ModesDB(DBWrapper):
         # !! warning, no reconnection for this proc implemented
         # request to db, but connection should work from previous requests in this function
         self.cur.copy_from(f_data, 'modedata', size=io_size, columns=cols)
-
+        #self.execute("update mode set info = (info || jsonb_build_object($1, $2)) where id=$3", ['character varying','character varying', 'integer'])
         f_data.close()
         return mode_id
 
