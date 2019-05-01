@@ -5,11 +5,13 @@ from aux.Qt import QtGui, QtCore, QtWidgets
 from fwidgets.auxwidgets import BaseGridW
 from fwidgets.fspinbox import FSpinBox
 
+from acc_db.db import ModesDB
+from aux import str2u
 from acc_ctl.mode_defs import mode_colors  # , rev_mode_map, mode_map
 
-from acc_db.db import ModesDB
-
-from aux import str2u
+def_qcolor = QtGui.QColor("#fafafa")
+mode_qcolors = {key: QtGui.QColor(mode_colors[key]) for key in mode_colors}
+mode_dqcolors = {key: mode_qcolors[key].darker() for key in mode_qcolors}
 
 # later may be use django ORM
 # import os
@@ -18,7 +20,6 @@ from aux import str2u
 # django.setup()
 #
 # from accmode.models import Mode,ModeMark
-
 
 class ModeList(QtWidgets.QTableWidget):
     modeSelected = QtCore.pyqtSignal(int)
@@ -88,8 +89,10 @@ class ModeList(QtWidgets.QTableWidget):
                 item = QtWidgets.QTableWidgetItem(rtext)
                 #item.setFlags(QtCore.Qt.ItemIsEditable)
                 self.setItem(ind, rind-1, item)
-                if rind == 4 or rind == 5:
-                    item.setBackground(QtGui.QColor(mode_colors.get(rtext, "#fafafa")))
+                if rind == 4:
+                    item.setBackground(mode_dqcolors.get(rtext, def_qcolor))
+                if rind == 5:
+                    item.setBackground(mode_qcolors.get(rtext, def_qcolor))
 
         self.resizeRowsToContents()
 

@@ -1,9 +1,6 @@
 # demag/remag path db for injection complex
 
 mode_colors = {
-    # None  : '#ffffff',
-    # ''    : '#ffffff',
-    # 'idle': None,
     'einj': '#f0f0f0',
     'eext': '#f0f0f0',
     'pinj': '#f0f0f0',

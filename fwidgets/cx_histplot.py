@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 
-from aux.Qt import QtCore, QtWidgets, QtGui
+from aQt import QtCore, QtWidgets, QtGui
 import pycx4.qcda as cda
-
 import pyqtgraph as pg
 import numpy as np
 import sys
 import time
-
-#pg.setConfigOptions(useOpenGL=True)
 
 class ChanHist:
     def __init__(self, cname, hist_time):
@@ -156,6 +153,7 @@ class CXHistPlot2(pg.GraphicsLayoutWidget):
 
 
     def addChan(self, cname):
+        pass
 
     # Axis
     a2 = pg.AxisItem("left")
@@ -233,7 +231,7 @@ app = QtWidgets.QApplication(sys.argv)
 # plt = pg.plot(np.random.normal(size=100), title="Simplest possible plotting example")
 # print(plt)
 w = CXHistPlot(cname='sled1.Imes', hist_time=5000)
-w.addChan('WG4_2.Imes')
+#w.addChan('WG4_2.Imes')
 
 w.show()
 
