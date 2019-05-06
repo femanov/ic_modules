@@ -95,7 +95,6 @@ class ModesClient(ModesCtl):
                                                  'syslist': syslist,
                                                  'types': types}))
 
-
     def load_marked(self, mark, syslist, types=['rw']):
         self.cmd_chan.setValue(cmd_text('load marked', {'mark': mark,
                                                         'syslist': syslist,

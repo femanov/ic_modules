@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-
-import math
 from aux.Qt import QtGui, QtCore, QtWidgets
 from fwidgets.auxwidgets import BaseGridW
 from fwidgets.fspinbox import FSpinBox
@@ -11,15 +9,8 @@ from acc_ctl.mode_defs import mode_colors  # , rev_mode_map, mode_map
 
 def_qcolor = QtGui.QColor("#fafafa")
 mode_qcolors = {key: QtGui.QColor(mode_colors[key]) for key in mode_colors}
-mode_dqcolors = {key: mode_qcolors[key].darker() for key in mode_qcolors}
+mode_dqcolors = {key: mode_qcolors[key].darker(150) for key in mode_qcolors}
 
-# later may be use django ORM
-# import os
-# import django
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web.settings")
-# django.setup()
-#
-# from accmode.models import Mode,ModeMark
 
 class ModeList(QtWidgets.QTableWidget):
     modeSelected = QtCore.pyqtSignal(int)
@@ -78,24 +69,36 @@ class ModeList(QtWidgets.QTableWidget):
         self.modes = [list(x) for x in self.modes_db.mode_list(limit, offset, filter, load_archived)]
 
         self.all_modes = self.marked_modes + self.modes
-        self.setRowCount(len(self.all_modes))
-        for ind in range(len(self.all_modes)):
+        m_num = len(self.all_modes)
+        cr_num = self.rowCount()
+        if m_num > cr_num:
+            self.setRowCount(m_num)
+            for ind in range(cr_num, m_num):
+                for rind in range(len(self.all_modes[0])):
+                    self.setItem(ind, rind, QtWidgets.QTableWidgetItem())
+        elif m_num < cr_num:
+            self.setRowCount(m_num)
+
+        start_ind = 8
+        if update_marked:
+            start_ind = 0
+
+        for ind in range(start_ind, m_num):
             row = self.all_modes[ind]
             for rind in range(1, len(row)):
                 if rind == 3:
                     rtext = row[rind].strftime("%Y-%m-%d %H:%M:%S")
                 else:
                     rtext = row[rind]
-                item = QtWidgets.QTableWidgetItem(rtext)
-                #item.setFlags(QtCore.Qt.ItemIsEditable)
-                self.setItem(ind, rind-1, item)
+                item = self.item(ind, rind-1)
+                item.setText(rtext)
                 if rind == 4:
                     item.setBackground(mode_dqcolors.get(rtext, def_qcolor))
                 if rind == 5:
                     item.setBackground(mode_qcolors.get(rtext, def_qcolor))
+                #item.setFlags(QtCore.Qt.ItemIsEditable)
 
         self.resizeRowsToContents()
-
         self.selected_row = None
         self.updating_list = False
 
@@ -341,22 +344,9 @@ class ModeListFull(BaseGridW):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(['mode_list'])
 
-    # w = ModeList()
-    # w.resize(800, 800)
-    # w.show()
-    # w.modeSelected.connect(print)
-
-    # w1 = ModeListFilter()
-    # w1.show()
-
-    # w2 = ModeListBControls()
-    # w2.show()
-    # w2.markMode.connect(print)
-
     w3 = ModeListFull()
     w3.resize(900, 800)
     w3.show()
     w3.markMode.connect(print)
-
 
     app.exec_()
