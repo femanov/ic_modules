@@ -1,17 +1,30 @@
-from aQt.QtDesigner import QPyDesignerCustomWidgetCollectionPlugin
+#from aQt.QtDesigner import QPyDesignerCustomWidgetCollectionPlugin
+
+from .auxwidgets import HLine, BaseGridW, BaseFrameGridW
+from .fcheckbox import FCheckBox
+from .fcombobox import FComboBox
+from .fdoublespinbox import FDoubleSpinBox
+from .flcdnumber import FLCDNumber
+# from .flineedit import
+from .fspinbox import FSpinBox
+from .ledwidget import LedWidget
+
+from .cx_checkbox import CXCheckBox
+from .cx_combobox import CXTextComboBox
+from .cx_doublespinbox import CXDoubleSpinBox
+# from .cx_histplot import
+from .cx_lcdnumber import CXLCDNumber
+from .cx_led import CXEventLed
+from .cx_lineedit import CXLineEdit
+from .cx_progressbar import CXProgressBar
+from .cx_pushbutton import CXPushButton
+from .cx_spinbox import CXSpinBox
+
+from .cx_bpm_plot import BPMWidget, K500BPMWidget
 
 
-from . import fcheckbox
-from . import fdoublespinbox
-from . import fcombobox
-
-FCheckBox = fcheckbox.FCheckBox
-FDoubleSpinBox = fdoublespinbox.FDoubleSpinBox
-FComboBox = fcombobox.FComboBox
-
-
-# class CXPlugins(QPyDesignerCustomWidgetCollectionPlugin):
-#     def __init__(self, parent=None):
-#         super(CXPlugins, self).__init__(parent)
-#
+__all__ = [HLine, BaseGridW, BaseFrameGridW, FCheckBox, FComboBox, FDoubleSpinBox, FLCDNumber, FSpinBox, LedWidget,
+           CXCheckBox, CXTextComboBox, CXDoubleSpinBox, CXLCDNumber, CXEventLed, CXLineEdit, CXProgressBar,
+           CXPushButton, CXSpinBox, BPMWidget, K500BPMWidget
+           ]
 

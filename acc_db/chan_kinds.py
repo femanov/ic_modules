@@ -2,7 +2,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
-import fwidgets as fw
+from fwidgets import FCheckBox
 
 from acc_db.db import AccConfig
 
@@ -26,7 +26,7 @@ class KindTable(QTableWidget):
             item = QTableWidgetItem(self.kinds[ind])
             item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.setItem(ind, 0, item)
-            self.checkers.append(fw.FCheckBox(self))
+            self.checkers.append(FCheckBox(self))
             self.setCellWidget(ind, 1, self.checkers[-1])
             if self.kinds[ind] == 'rw':
                 self.checkers[-1].setValue(1)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from aux.Qt import QtGui, uic, QtCore, QtWidgets
+from aux.Qt import QtGui, QtCore, QtWidgets
 
 import os
 import django
@@ -55,7 +55,6 @@ class SysTree(QtWidgets.QTreeWidget):
         self.itemPressed.connect(self.item_click_cb)
 
         # 2DO: add processing for show devises
-
 
         self.header().hide()
         self.setSelectionMode(0)
