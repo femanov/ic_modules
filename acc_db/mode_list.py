@@ -8,7 +8,7 @@ from acc_ctl.mode_defs import mode_colors  # , rev_mode_map, mode_map
 
 def_qcolor = QtGui.QColor("#fafafa")
 mode_qcolors = {key: QtGui.QColor(mode_colors[key]) for key in mode_colors}
-mode_dqcolors = {key: mode_qcolors[key].darker(150) for key in mode_qcolors}
+mode_dqcolors = {key: mode_qcolors[key].darker(135) for key in mode_qcolors}
 
 
 class ModeList(QtWidgets.QTableWidget):
@@ -33,7 +33,7 @@ class ModeList(QtWidgets.QTableWidget):
         self.setColumnCount(5)
         self.setColumnWidth(0, 130)
         self.setColumnWidth(1, 400)
-        self.setColumnWidth(2, 220)
+        self.setColumnWidth(2, 240)
         self.setColumnWidth(3, 60)
         self.setColumnWidth(4, 60)
 
@@ -41,6 +41,8 @@ class ModeList(QtWidgets.QTableWidget):
 
         self.background_color = self.item(0, 0).background()
         self.selected_color = QtGui.QColor(200, 255, 255)
+
+        self.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
 
     def item_edit_proc(self, row, col):
         if self.updating_list or col > 1:
@@ -95,22 +97,24 @@ class ModeList(QtWidgets.QTableWidget):
                     item.setBackground(mode_dqcolors.get(rtext, def_qcolor))
                 if rind == 5:
                     item.setBackground(mode_qcolors.get(rtext, def_qcolor))
-                #item.setFlags(QtCore.Qt.ItemIsEditable)
-
         self.resizeRowsToContents()
-        self.selected_row = None
+        self.mode_unselect()
         self.updating_list = False
 
     def mode_select(self, row, col):
-        if self.selected_row is not None:
-            self.item(self.selected_row, 0).setBackground(self.background_color)
-            self.item(self.selected_row, 1).setBackground(self.background_color)
-            self.item(self.selected_row, 2).setBackground(self.background_color)
+        self.mode_unselect()
         self.selected_row = row
         self.item(row, 0).setBackground(self.selected_color)
         self.item(row, 1).setBackground(self.selected_color)
         self.item(row, 2).setBackground(self.selected_color)
         self.modeSelected.emit(self.all_modes[row][0])
+
+    def mode_unselect(self):
+        if self.selected_row is not None:
+            self.item(self.selected_row, 0).setBackground(self.background_color)
+            self.item(self.selected_row, 1).setBackground(self.background_color)
+            self.item(self.selected_row, 2).setBackground(self.background_color)
+            self.selected_row = None
 
 
 class ModeListFilter(BaseGridW):
