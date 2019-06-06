@@ -11,6 +11,77 @@ mode_colors = {
     'p2v2': '#ff6b6b',
 }
 
+coefs_set = {
+    'd3m4n5': [
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        None,
+        None,
+    ],
+
+    'd5M1t4': [
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        [1.0, 1.05, 1.0],
+
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        None,
+        None,
+    ],
+
+    'd6M1t4': [
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        None,
+
+        None,
+        None,
+        None,
+        None,
+    ],
+}
+
 path_set = {
     'd3m4n5': [
         ['e2v2', 'p2v2'],

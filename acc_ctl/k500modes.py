@@ -108,6 +108,7 @@ class K500Director(QObject):
         if target_mode == self.cur_mode:
             return
         mag_path = {name: mode_path(name, self.cur_mode, target_mode) for name in remag_devs}
-        print(mag_path)
-        self.mode_ctl.walker_load(mag_path)
+        coefs = {name: coefs_set[name][path_set[name].index(mag_path[name])] for name in mag_path}
+        print(coefs)
+        self.mode_ctl.walker_load(mag_path, coefs)
 
