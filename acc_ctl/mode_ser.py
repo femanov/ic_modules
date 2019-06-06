@@ -106,8 +106,9 @@ class ModesClient(ModesCtl):
                                                       'comment': comment,
                                                       'author': author}))
 
-    def walker_load(self, walkers_path):
-        self.cmd_chan.setValue(cmd_text('walker load', {'walkers_path': walkers_path}))
+    def walker_load(self, walkers_path, coefs):
+        self.cmd_chan.setValue(cmd_text('walker load', {'walkers_path': walkers_path,
+                                                        'coefs': coefs}))
 
     def ask_update(self):
         self.res_chan.setValue(cmd_text('update', {}))
@@ -118,7 +119,7 @@ class ModesServer(ModesCtl):
     load = QtCore.pyqtSignal(int, list, list)
     loadMarked = QtCore.pyqtSignal(str, list, list)
     markMode = QtCore.pyqtSignal(int, str, str, str)
-    walkerLoad = QtCore.pyqtSignal(dict)
+    walkerLoad = QtCore.pyqtSignal(dict, dict)
 
     def __init__(self):
         super(ModesServer, self).__init__()
@@ -144,7 +145,7 @@ class ModesServer(ModesCtl):
             self.markMode.emit(cdict['mode_id'], cdict['mark'], cdict['comment'], cdict['author'])
 
         if cdict['cmd'] == 'walker load':
-            self.walkerLoad.emit(cdict['walkers_path'])
+            self.walkerLoad.emit(cdict['walkers_path'], cdict['coefs'])
 
         chan.setValue('')
 
