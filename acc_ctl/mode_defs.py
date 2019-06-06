@@ -46,7 +46,7 @@ coefs_set = {
 
         None,
         None,
-        [1.0, 1.05, 1.0],
+        [1.0, 1.1, 1.0],
 
         None,
         None,
