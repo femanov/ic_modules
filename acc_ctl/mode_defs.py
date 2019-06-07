@@ -23,7 +23,7 @@ coefs_set = {
 
         None,
         None,
-        None,
+        [1.0, 1.1, 1.0],
 
         None,
         None,
@@ -69,7 +69,7 @@ coefs_set = {
 
         None,
         None,
-        None,
+        [1.0, 1.1, 1.0],
 
         None,
         None,
