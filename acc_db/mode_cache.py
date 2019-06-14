@@ -6,22 +6,26 @@ class SysCache:
     def __init__(self, **kwargs):
         self.db = kwargs.get('db', ModesDB())
 
-        self.cache = {}
-        self.db.execute("select distinct unnest(systems) from fullchan where is_current")
-        res = self.db.cur.fetchall()
-        self.sys = [x[0] for x in res]
-        for x in self.sys:
-            self.db.execute("select cur_chan_name from fullchan where is_current AND access=\'rw\' and %s=ANY(systems)", (x,))
-            self.cache[x] = [y[0] for y in self.db.cur.fetchall()]
+        self.a_kinds = self.db.access_kinds()
+        self.db.execute("select array_agg(sys order by sys) from "
+                        "(select distinct unnest(systems) from fullchan where is_current) as t(sys)")
+        self.sys = self.db.cur.fetchall()[0][0]
 
-    def cnames(self, syslist):
+        self.cache = {ak: {s: self.get_namelist(s, ak) for s in self.sys} for ak in self.a_kinds}
+
+    def get_namelist(self, sys, a_kind):
+        self.db.execute("select array_agg(cur_chan_name) from fullchan where is_current"
+                        " AND access=%s and %s=ANY(systems)", (a_kind, sys))
+        return self.db.cur.fetchall()[0][0]
+
+    def cnames(self, syslist, a_kinds):
         ret = set()
-        for x in syslist:
-            if x not in self.cache:
-                # it's happens if system not appeared in cache
-                #print("requested subsys not found:", x)
-                continue
-            ret = ret.union(self.cache[x])
+        for ak in a_kinds:
+            for s in syslist:
+                try:
+                    ret = ret.union(self.cache[ak][s])
+                except KeyError:
+                    pass
         return ret
 
 
@@ -31,26 +35,12 @@ class ModeCache:
         self.sys_cache = kwargs.get('sys_cache', SysCache(db=self.db))
 
         self.name = mark
+        sys, a_kinds = self.sys_cache.sys, self.sys_cache.a_kinds
 
-        # loading mode for ["rw"] type of channels
-        self.mode_data = self.db.load_mode_bymark(mark, self.sys_cache.sys)
-        # modedata: protocol, chan_name, value
+        self.data = {x[1]: x for x in self.db.load_mode_bymark(mark, sys, a_kinds)}
+        # x: (protocol, chan_name, value)
 
-        # create a
-        self.data = {x[1]: x for x in self.mode_data}
+    def extract(self, syslist, a_kinds):
+        namelist = self.sys_cache.cnames(syslist, a_kinds)
+        return [self.data[key] for key in namelist if key in self.data]
 
-    def extract(self, syslist):
-        namelist = self.sys_cache.cnames(syslist)
-        try:
-            # the faster call
-            res = [self.data[key] for key in namelist]
-        except:
-            # works in case of key errors in try
-            res = []
-            for key in namelist:
-                if key in self.data:
-                    res.append(self.data[key])
-                else:
-                    pass
-                    #print(key) # to search not avaliable keys
-        return res

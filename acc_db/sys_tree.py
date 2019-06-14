@@ -8,7 +8,7 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web.settings")
 django.setup()
 
-from accdb.models import Sys
+from accdb.models import Sys, Dev
 
 modpath = os.path.dirname(os.path.realpath(__file__))
 
@@ -34,7 +34,7 @@ class SysTree(QtWidgets.QTreeWidget):
         self.id_tpath = {x.id: x.path for x in self.db_tree}
         self.id_tree = {x.id: x for x in self.db_tree}
 
-        self.id_path = {k: [self.path_id[x] for x in self.item_ancestors_path(v)] for (k,v) in self.id_tpath.items()}
+        self.id_path = {k: [self.path_id[x] for x in self.item_ancestors_path(v)] for (k, v) in self.id_tpath.items()}
 
         self.selection = {x.id: 0 for x in self.db_tree}
 
@@ -52,6 +52,19 @@ class SysTree(QtWidgets.QTreeWidget):
             w.setIcon(0, self.sel_icons[0])
             w.setToolTip(0, x.description)
 
+            if self.show_devs:
+                devs = x.devs.all()
+                for d in devs:
+                    wd = QtWidgets.QTreeWidgetItem(w, [d.name])
+                    wd.setToolTip(0, d.description)
+
+        if self.show_devs:
+            w = QtWidgets.QTreeWidgetItem(self, ['unsorted_devs'])
+            unsorted_devs = Dev.objects.filter(sys__isnull=True)
+            for d in unsorted_devs:
+                wd = QtWidgets.QTreeWidgetItem(w, [d.name])
+                wd.setToolTip(0, d.description)
+
         self.itemPressed.connect(self.item_click_cb)
 
         # 2DO: add processing for show devises
@@ -64,6 +77,8 @@ class SysTree(QtWidgets.QTreeWidget):
 
     def item_click_cb(self, item_w, col):
         sid = self.id_by_widget(item_w)
+        if sid is None:
+            return
         dpath = self.id_path[sid] + [sid]
         descend = [k for (k, v) in self.id_path.items() if v[:len(dpath)] == dpath]
         anc = reversed(self.id_path[sid])
@@ -129,7 +144,7 @@ class SysTree(QtWidgets.QTreeWidget):
 
 if __name__=='__main__':
     app = QtWidgets.QApplication(['dev_tree'])
-    w = SysTree()
+    w = SysTree(show_devs=True)
     w.resize(400, 800)
     w.show()
     w.selectionChanged.connect(print)

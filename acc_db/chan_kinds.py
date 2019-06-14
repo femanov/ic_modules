@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
 from fwidgets import FCheckBox
 
 from acc_db.db import AccConfig
+from acc_db.db import ModesDB
 
 
 class KindTable(QTableWidget):
@@ -16,8 +17,8 @@ class KindTable(QTableWidget):
         self.horizontalHeader().setVisible(False)
 
         # database connect
-        self.db = AccConfig()
-        self.kinds = self.db.savable_access_kinds()
+        self.db = ModesDB()
+        self.kinds = self.db.access_kinds()
         self.checkers = []
 
         self.setRowCount(len(self.kinds))

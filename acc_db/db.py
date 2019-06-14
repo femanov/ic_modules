@@ -195,3 +195,7 @@ class ModesDB(DBWrapper):
         ks = kwargs.keys()
         req = "update mode set " + "=%s,".join(ks) + '=%s where id=%s'
         self.execute(req, [kwargs[k] for k in ks] + [id])
+
+    def access_kinds(self):
+        self.execute('select array_agg(distinct access) from fullchan')
+        return self.cur.fetchall()[0][0]
