@@ -28,7 +28,7 @@ class SysCache:
                     pass
                 except TypeError:
                     print("type err", ak, s)
-                    #pass
+                    print(self.cache[ak][s])
         return ret
 
 
