@@ -25,6 +25,7 @@ class SysCache:
                 try:
                     ret = ret.union(self.cache[ak][s])
                 except KeyError:
+                    print("key not found:", ak, s)
                     pass
                 except TypeError:
                     print("type err", ak, s)
