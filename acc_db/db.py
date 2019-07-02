@@ -113,7 +113,7 @@ class ModesDB(DBWrapper):
 
 
     def mode_chans(self):
-        self.execute("SELECT protocol, cur_chan_name, id from fullchan WHERE is_current ORDER BY namesys_id,dev_id,chan_id")
+        self.execute("SELECT protocol, cur_chan_name, id from fullchan WHERE is_current ORDER BY dev_id,chan_id")
         return self.cur.fetchall()
 
     def mode_list(self, limit=100, offset=0, like=None, load_archived=False):
