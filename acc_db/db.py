@@ -111,7 +111,6 @@ class ModesDB(DBWrapper):
             kwargs.update(mode_db_cfg)
         super(ModesDB, self).__init__(**kwargs)
 
-
     def mode_chans(self):
         self.execute("SELECT protocol, cur_chan_name, id from fullchan WHERE is_current ORDER BY dev_id,chan_id")
         return self.cur.fetchall()
