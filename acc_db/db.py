@@ -8,9 +8,6 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
 from settings.db import acc_cfg, mode_db_cfg
 
-# since we use django for some tasks - will try to use djungo ORM
-# kwargs mast be: dbname=DB, user=DBUSER,
-# more kwargs: password=DBPASSWORD, host=DBHOST <-- from
 
 class DBWrapper:
     def __init__(self, **kwargs):
@@ -141,7 +138,6 @@ class ModesDB(DBWrapper):
                     " LEFT JOIN modemark on mode.id = modemark.mode_id"
                     " WHERE modemark.id = ANY(%s) ORDER BY mode.stime DESC", (mark_ids,))
         return self.cur.fetchall()
-
 
     def archive_mode(self, mode_id):
         self.execute('UPDATE mode SET archived=true WHERE id=%s', (mode_id,))
