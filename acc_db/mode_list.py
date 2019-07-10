@@ -220,6 +220,7 @@ class ModeListBControls(BaseGridW):
     mark = QtCore.pyqtSignal(str)
     load = QtCore.pyqtSignal()
     archive = QtCore.pyqtSignal()
+    zeros = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(ModeListBControls, self).__init__(parent)
@@ -254,6 +255,11 @@ class ModeListBControls(BaseGridW):
         self.grid.addWidget(self.btn_load, 0, rlen + 4)
         self.btn_load.setFixedWidth(110)
         self.btn_load.clicked.connect(self.load)
+
+        self.btn_zeros = QtWidgets.QPushButton('Zeros')
+        self.grid.addWidget(self.btn_zeros, 1, rlen + 3)
+        self.btn_zeros.setStyleSheet("background-color: yellow")
+
 
     def buttons_cb(self):
         ind = self.buttons.index(self.sender())
@@ -344,12 +350,225 @@ class ModeListFull(BaseGridW):
         self.listw.update_modelist(**fvals)
 
 
-if __name__ == '__main__':
-    app = QtWidgets.QApplication(['mode_list'])
+class ModeListCtrl(BaseGridW):
+    markMode = QtCore.pyqtSignal(int, str, str, str)  # mode_id, mark_id
+    archiveMode = QtCore.pyqtSignal(int)  # mode_id
+    loadMode = QtCore.pyqtSignal(int)  # mode_id
+    saveMode = QtCore.pyqtSignal(str, str)  # author, comment
+    setZeros = QtCore.pyqtSignal()
+    outMsg = QtCore.pyqtSignal(str)
 
-    w3 = ModeListFull()
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.modes_db = ModesDB()
+
+        #filter controls
+        self.grid_filter = QtWidgets.QGridLayout()
+        self.grid.addLayout(self.grid_filter, 0, 0, 1, 1)
+
+        self.grid_filter.addWidget(QtWidgets.QLabel("search"), 0, 0)
+
+        self.filter_line = QtWidgets.QLineEdit()
+        self.grid_filter.addWidget(self.filter_line, 0, 1, 1, 6)
+        self.filter_line.editingFinished.connect(self.filter_cb)
+
+        self.prev_b = QtWidgets.QPushButton("<<")
+        self.grid_filter.addWidget(self.prev_b, 1, 0)
+        self.prev_b.clicked.connect(self.prev_cb)
+
+        self.nrows_box = FSpinBox()
+        self.grid_filter.addWidget(self.nrows_box, 1, 1)
+        self.nrows_box.done.connect(self.nrows_cb)
+
+        self.grid_filter.addWidget(QtWidgets.QLabel("@"), 1, 2)
+
+        self.startrow_box = FSpinBox()
+        self.grid_filter.addWidget(self.startrow_box, 1, 3)
+        self.startrow_box.done.connect(self.startrow_cb)
+
+        self.grid_filter.addWidget(QtWidgets.QLabel("of"), 1, 4)
+
+        self.maxrows_box = FSpinBox()
+        self.grid_filter.addWidget(self.maxrows_box, 1, 5)
+        self.maxrows_box.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        self.maxrows_box.setReadOnly(True)
+
+        self.next_b = QtWidgets.QPushButton(">>")
+        self.grid_filter.addWidget(self.next_b, 1, 6)
+        self.next_b.clicked.connect(self.next_cb)
+
+        # List
+        self.listw = ModeList(db=self.modes_db)
+        self.grid.addWidget(self.listw, 1, 0)
+        self.listw.modeSelected.connect(self.mode_sel_cb)
+
+        # Bottom controls
+        self.grid_bottom = QtWidgets.QGridLayout()
+        self.grid.addLayout(self.grid_bottom, 2, 0, 1, 1)
+
+        self.grid_bottom.addWidget(QtWidgets.QLabel("mark"), 0, 0, 2, 1)
+
+        self.buttons = []
+        self.marks = ['einj', 'eext', 'pinj', 'pext', 'e2v4', 'p2v4', 'e2v2', 'p2v2']
+        m_len = len(self.marks)
+        rlen = 4
+        crow = 0
+        for ind in range(m_len):
+            if ind == rlen:
+                crow += 1
+            btn = QtWidgets.QPushButton(self.marks[ind])
+            btn.setStyleSheet("background-color: " + mode_colors[self.marks[ind]])
+            btn.setFixedWidth(100)
+            self.grid_bottom.addWidget(btn, crow, ind - crow * rlen + 1)
+            self.buttons.append(btn)
+            btn.clicked.connect(self.mark_buttons_cb)
+
+        hSpacer = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.grid_bottom.addItem(hSpacer, 0, rlen + 2)
+
+        self.btn_archive = QtWidgets.QPushButton('Archive')
+        self.grid_bottom.addWidget(self.btn_archive, 0, rlen + 3)
+        self.btn_archive.setStyleSheet("background-color: red")
+        self.btn_archive.setFixedWidth(110)
+        self.btn_archive.clicked.connect(self.btn_archive_cb)
+
+        self.btn_load = QtWidgets.QPushButton('Load')
+        self.grid_bottom.addWidget(self.btn_load, 0, rlen + 4)
+        self.btn_load.setFixedWidth(110)
+        self.btn_load.clicked.connect(self.btn_load_cb)
+
+        self.btn_zeros = QtWidgets.QPushButton('Zeros')
+        self.grid_bottom.addWidget(self.btn_zeros, 1, rlen + 3)
+        self.btn_zeros.setStyleSheet("background-color: yellow")
+        self.btn_zeros.clicked.connect(self.setZeros)
+
+        # Save Block
+        self.grid_save = QtWidgets.QGridLayout()
+        self.grid.addLayout(self.grid_save, 3, 0, 1, 1)
+
+        self.grid_save.addWidget(QtWidgets.QLabel("Comment:"), 0, 0)
+        self.grid_save.addWidget(QtWidgets.QLabel("author:"), 1, 0)
+
+        self.comment_line = QtWidgets.QLineEdit()
+        self.grid_save.addWidget(self.comment_line, 0, 1)
+
+        self.author_line = QtWidgets.QLineEdit()
+        self.grid_save.addWidget(self.author_line, 1, 1)
+
+        self.btn_save = QtWidgets.QPushButton('save')
+        self.grid_save.addWidget(self.btn_save, 0, 2, 2, 1)
+        self.btn_save.clicked.connect(self.btn_save_cb)
+
+        self.nrows, self.maxrows, self.startrow, self.filter = 100, 0, 0, None
+        self.update_modenum()
+        self.nrows_box.setValue(self.nrows)
+
+        self.selected_mode = None
+
+    # filter control functions
+    def update_modelist(self, update_marked=False):
+        args = {
+            'limit': self.nrows,
+            'offset': self.startrow,
+            'filter': self.filter,
+            'update_marked': update_marked
+        }
+        self.listw.update_modelist(**args)
+
+    def update_modenum(self):
+        self.modes_db.execute("select count(id) from mode")
+        self.maxrows = self.modes_db.cur.fetchall()[0][0]
+        self.maxrows_box.setValue(self.maxrows)
+
+    def set_nrows(self, nrows):
+        self.nrows = nrows
+        self.nrows_box.setValue(self.nrows)
+
+    def nrows_cb(self, nrows):
+        if self.startrow + nrows > self.maxrows:
+            self.nrows = self.maxrows - self.startrow
+            self.nrows_box.setValue(self.nrows)
+        else:
+            self.nrows = nrows
+        self.update_modelist()
+
+    def startrow_cb(self, startrow):
+        if self.nrows + startrow > self.maxrows:
+            self.startrow = self.maxrows - self.nrows
+            self.startrow_box.setValue(self.startrow)
+        else:
+            self.startrow = startrow
+            self.update_modelist()
+
+    def filter_cb(self):
+        self.filter = self.filter_line.text()
+        if self.filter == "":
+            self.filter = None
+        self.update_modelist()
+
+    def prev_cb(self):
+        if self.startrow - self.nrows >= 0:
+            self.startrow -= self.nrows
+        else:
+            self.startrow = 0
+        self.startrow_box.setValue(self.startrow)
+        self.update_modelist()
+
+    def next_cb(self):
+        if self.startrow + 2 * self.nrows < self.maxrows:
+            self.startrow += self.nrows
+        else:
+            self.startrow = self.maxrows - self.nrows
+        self.startrow_box.setValue(self.startrow)
+        self.update_modelist()
+
+    # mode list functions
+    def mode_sel_cb(self, mode_id):
+        self.selected_mode = mode_id
+
+    # bottom control
+    def mark_buttons_cb(self):
+        if self.selected_mode is None:
+            self.outMsg.emit('no mode selected')
+            return
+        ind = self.buttons.index(self.sender())
+        self.markMode.emit(self.selected_mode, self.marks[ind], 'saver', 'automatic mode')
+
+    def btn_archive_cb(self):
+        if self.selected_mode is None:
+            self.outMsg.emit('no mode selected')
+            return
+        self.archiveMode.emit(self.selected_mode)
+
+    def btn_load_cb(self):
+        if self.selected_mode is None:
+            self.outMsg.emit('no mode selected')
+            return
+        self.loadMode.emit(self.selected_mode)
+
+    def btn_save_cb(self):
+        comment = str2u(self.comment_line.text())
+        if len(comment) == 0:
+            self.outMsg.emit('no comment - no save')
+            return
+        author = str2u(self.author_line.text())
+        if len(author) == 0:
+            self.outMsg.emit('save: it isn`t polite to operate machine anonymously')
+            return
+        self.saveMode.emit(author, comment)
+
+
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(['mode list test'])
+
+    w3 = ModeListCtrl()
     w3.resize(900, 800)
     w3.show()
     w3.markMode.connect(print)
+    w3.archiveMode.connect(print)
+    w3.loadMode.connect(print)
+    w3.saveMode.connect(print)
+    w3.setZeros.connect(print)
+    w3.outMsg.connect(print)
 
     app.exec_()

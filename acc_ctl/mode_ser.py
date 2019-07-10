@@ -43,6 +43,8 @@ class ModesClient(ModesCtl):
     markedReady = QtCore.pyqtSignal()
     walkerDone = QtCore.pyqtSignal(str)
 
+    zerosDone = QtCore.pyqtSignal(dict)
+
     #auxilary signals
     update = QtCore.pyqtSignal()  # emited when server instructs clients to update DB info
 
@@ -53,7 +55,7 @@ class ModesClient(ModesCtl):
         self.timer = QtCore.QTimer()
         self.delay = 100
 
-        self.proto_ver = 0.9
+        self.proto_ver = 0.901
 
     def res_cb(self, chan):
         try:
@@ -81,6 +83,11 @@ class ModesClient(ModesCtl):
         if cdict['cmd'] == 'walker done':
             self.walkerDone.emit(cdict['name'])
 
+        if cdict['cmd'] == 'zeros done':
+            cdict['time'] = chan.time
+            self.modeLoaded.emit(cdict)
+
+
     def setDelay(self, delay):
         self.delay = delay
 
@@ -100,6 +107,10 @@ class ModesClient(ModesCtl):
                                                         'syslist': syslist,
                                                         'types': types}))
 
+    def set_zeros(self, syslist, types=['rw']):
+        self.cmd_chan.setValue(cmd_text('set zeros', {'syslist': syslist,
+                                                      'types': types}))
+
     def mark_mode(self, mode_id, mark, comment, author):
         self.cmd_chan.setValue(cmd_text('mark mode', {'mode_id': mode_id,
                                                       'mark': mark,
@@ -118,6 +129,7 @@ class ModesServer(ModesCtl):
     save = QtCore.pyqtSignal(str, str)
     load = QtCore.pyqtSignal(int, list, list)
     loadMarked = QtCore.pyqtSignal(str, list, list)
+    setZeros = QtCore.pyqtSignal(list, list)
     markMode = QtCore.pyqtSignal(int, str, str, str)
     walkerLoad = QtCore.pyqtSignal(dict, dict)
 
@@ -147,6 +159,9 @@ class ModesServer(ModesCtl):
         if cdict['cmd'] == 'walker load':
             self.walkerLoad.emit(cdict['walkers_path'], cdict['coefs'])
 
+        if cdict['cmd'] == 'set zeros':
+            self.setZeros.emit(cdict['syslist'], cdict['types'])
+
         chan.setValue('')
 
     def saved(self, mode_id):
@@ -163,3 +178,6 @@ class ModesServer(ModesCtl):
 
     def walkerDone(self, name):
         self.res_chan.setValue(cmd_text('walker done', {'name': name}))
+
+    def zerosDone(self, msg):
+        self.res_chan.setValue(cmd_text('zeros done', {'msg': msg}))

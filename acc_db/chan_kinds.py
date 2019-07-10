@@ -4,7 +4,6 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
 from fwidgets import FCheckBox
 
-from acc_db.db import AccConfig
 from acc_db.db import ModesDB
 
 
