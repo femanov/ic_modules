@@ -151,7 +151,7 @@ class ModesDB(DBWrapper):
 
         f_data = BytesIO()
         for row in data:
-            f_data.write(('\t'.join([str(mode_id)] + [str(x) for x in row[2:]]) + '\n').encode())
+            f_data.write(('\t'.join([str(mode_id)] + [str(x) for x in row]) + '\n').encode())
 
         io_size = f_data.tell()
         f_data.seek(0)
@@ -168,7 +168,7 @@ class ModesDB(DBWrapper):
         return mode_id
 
     def load_mode(self, mode_id, sysid_list, load_types=['rw']):
-        self.execute("SELECT * FROM load_mode(%s, %s, %s) ", (mode_id, sysid_list, load_types))
+        self.execute("SELECT * FROM load_mode_l(%s, %s, %s) ", (mode_id, sysid_list, load_types))
         return self.cur.fetchall()
 
     def load_mode_bymark_old(self, mark_id, sysid_list, load_type=['rw']):
@@ -176,7 +176,7 @@ class ModesDB(DBWrapper):
         return self.cur.fetchall()
 
     def load_mode_bymark(self, mark_name, sysid_list, load_type=['rw']):
-        self.execute("select * FROM load_mode_bymarkt(%s, %s, %s)", (mark_name, sysid_list, load_type))
+        self.execute("select * FROM load_mode_bymarkt_l(%s, %s, %s)", (mark_name, sysid_list, load_type))
         return self.cur.fetchall()
 
     def mark_mode(self, mode_id, name, comment, author):
