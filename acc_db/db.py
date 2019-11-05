@@ -141,46 +141,28 @@ class ModesDB(DBWrapper):
     def archive_mode(self, mode_id):
         self.execute('UPDATE mode SET archived=true WHERE id=%s', (mode_id,))
 
-    def mark_mode_old(self, mode_id, name, comment, author, mark_id=0):
-        self.execute("SELECT mark_mode(%s, %s, %s, %s, %s)", (mode_id, name, comment, author, mark_id))
-
-    def save_mode(self, author, comment, data):
-        self.execute("INSERT INTO mode(author,comment,stime,info,archived) values(%s,%s,now(),jsonb_build_object('init',1),false) RETURNING id",
-                     (author, comment))
+    def save_mode(self, author, comment, data_json):
+        self.execute("INSERT INTO mode(author,comment,stime,archived,data)"
+                     " values(%s,%s,now(),false,%s)  RETURNING id", (author, comment, data_json))
         mode_id = self.cur.fetchone()[0]
-
-        f_data = BytesIO()
-        for row in data:
-            f_data.write(('\t'.join([str(mode_id)] + [str(x) for x in row]) + '\n').encode())
-
-        io_size = f_data.tell()
-        f_data.seek(0)
-        cols = ['mode_id', 'fullchan_id', 'utime', 'value', 'available']
-        # !! warning, no reconnection for this proc implemented
-        # request to db, but connection should work from previous requests in this function
-        self.cur.copy_from(f_data, 'modedata', size=io_size, columns=cols)
-
-        # may be update mode just here?
-        #self.execute("update mode set info = info || jsonb_build_object('type', calc_mode_type(id)) where id=%s",
-        # (mode_id,))
-
-        f_data.close()
         return mode_id
 
     def load_mode(self, mode_id, sysid_list, load_types=['rw']):
-        self.execute("SELECT * FROM load_mode_l(%s, %s, %s) ", (mode_id, sysid_list, load_types))
-        return self.cur.fetchall()
-
-    def load_mode_bymark_old(self, mark_id, sysid_list, load_type=['rw']):
-        self.execute("select * FROM load_mode_bymark(%s, %s, %s)", (mark_id, sysid_list, load_type))
-        return self.cur.fetchall()
+        self.execute("SELECT * FROM load_mode(%s, %s, %s) ", (mode_id, sysid_list, load_types))
+        # since json standart do not have numerical keys in dict
+        # load_mode database function returns list of
+        db_data = self.cur.fetchall()[0][0]
+        data = {int(k): db_data[k] for k in db_data}
+        return data
 
     def load_mode_bymark(self, mark_name, sysid_list, load_type=['rw']):
-        self.execute("select * FROM load_mode_bymarkt_l(%s, %s, %s)", (mark_name, sysid_list, load_type))
-        return self.cur.fetchall()
+        self.execute("select * FROM load_mode_bymark(%s, %s, %s)", (mark_name, sysid_list, load_type))
+        db_data = self.cur.fetchall()[0][0]
+        data = {int(k): db_data[k] for k in db_data}
+        return data
 
     def mark_mode(self, mode_id, name, comment, author):
-        self.execute("SELECT mark_modet(%s, %s, %s, %s)", (mode_id, name, comment, author))
+        self.execute("SELECT mark_mode(%s, %s, %s, %s)", (mode_id, name, comment, author))
 
     def get_marks(self):
         self.execute("SELECT name from modemark ORDER BY id")
@@ -194,3 +176,4 @@ class ModesDB(DBWrapper):
     def access_kinds(self):
         self.execute('select array_agg(distinct access) from fullchan')
         return self.cur.fetchall()[0][0]
+

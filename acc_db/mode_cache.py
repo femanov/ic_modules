@@ -14,11 +14,11 @@ class SysCache:
         self.cache = {ak: {s: self.get_namelist(s, ak) for s in self.sys} for ak in self.a_kinds}
 
     def get_namelist(self, sys, a_kind):
-        self.db.execute("select array_agg(cur_chan_name) from fullchan where is_current"
+        self.db.execute("select array_agg(id) from fullchan where is_current"
                         " AND access=%s and %s=ANY(systems)", (a_kind, sys))
         return self.db.cur.fetchall()[0][0]
 
-    def cnames(self, syslist, a_kinds):
+    def cids(self, syslist, a_kinds):
         ret = set()
         for ak in a_kinds:
             for s in syslist:
@@ -38,14 +38,10 @@ class ModeCache:
     def __init__(self, mark, **kwargs):
         self.db = kwargs.get('db', ModesDB())
         self.sys_cache = kwargs.get('sys_cache', SysCache(db=self.db))
-
         self.name = mark
-        sys, a_kinds = self.sys_cache.sys, self.sys_cache.a_kinds
-
-        self.data = {x[1]: x for x in self.db.load_mode_bymark(mark, sys, a_kinds)}
-        # x: (protocol, chan_name, value)
+        self.data = self.db.load_mode_bymark(mark, self.sys_cache.sys, self.sys_cache.a_kinds)
 
     def extract(self, syslist, a_kinds):
-        namelist = self.sys_cache.cnames(syslist, a_kinds)
-        return [self.data[key] for key in namelist if key in self.data]
+        id_list = self.sys_cache.cids(syslist, a_kinds)
+        return {key: self.data[key] for key in id_list if key in self.data}
 
