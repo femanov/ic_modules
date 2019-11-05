@@ -144,7 +144,7 @@ class ModesDB(DBWrapper):
 
     def save_mode(self, author, comment, data_json):
         self.execute("INSERT INTO mode(author,comment,stime,archived,info,data)"
-                     " values(%s,%s,now(),false,%s,%s)  RETURNING id", (author, comment, "{\'saver\':1}", data_json))
+                     " values(%s,%s,now(),false,%s,%s)  RETURNING id", (author, comment, "{\"saver\":1}", data_json))
         mode_id = self.cur.fetchone()[0]
         return mode_id
 
