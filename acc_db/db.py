@@ -142,8 +142,8 @@ class ModesDB(DBWrapper):
         self.execute('UPDATE mode SET archived=true WHERE id=%s', (mode_id,))
 
     def save_mode(self, author, comment, data_json):
-        self.execute("INSERT INTO mode(author,comment,stime,archived,data)"
-                     " values(%s,%s,now(),false,%s)  RETURNING id", (author, comment, data_json))
+        self.execute("INSERT INTO mode(author,comment,stime,archived,info,data)"
+                     " values(%s,%s,now(),false,%s,%s)  RETURNING id", (author, comment, dict(), data_json))
         mode_id = self.cur.fetchone()[0]
         return mode_id
 
