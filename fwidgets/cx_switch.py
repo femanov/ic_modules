@@ -1,11 +1,11 @@
 from aQt.QtCore import pyqtSlot, pyqtProperty, Qt
-from fwidgets import FCheckBox
+from fwidgets import FSwitch
 import pycx4.qcda as cda
 
 
-class CXCheckBox(FCheckBox):
+class CXSwitch(FSwitch):
     def __init__(self, parent=None, **kwargs):
-        super(CXCheckBox, self).__init__(parent, **kwargs)
+        super(CXSwitch, self).__init__(parent)
         self._cname = kwargs.get('cname', None)
         self.chan = None
         self.cx_connect()
@@ -37,6 +37,3 @@ class CXCheckBox(FCheckBox):
         return self._cname
 
     cname = pyqtProperty(str, get_cname, set_cname)
-
-
-
