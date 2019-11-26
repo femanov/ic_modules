@@ -1,28 +1,19 @@
-#!/usr/bin/python3
-
-from aQt.QtCore import QTimer, Qt, QSize, pyqtSlot, pyqtProperty
-from aQt.QtGui import QColor, QPainter, QRadialGradient, QBrush
-from aQt.QtWidgets import QWidget, QApplication
+from cxwidgets.aQt.QtCore import QTimer, Qt, QSize, pyqtSlot, pyqtProperty
+from cxwidgets.aQt.QtGui import QColor, QPainter, QRadialGradient, QBrush
+from cxwidgets.aQt.QtWidgets import QWidget
 
 
 class LedWidget(QWidget):
-
     def __init__(self, parent=None):
-
         super(LedWidget, self).__init__(parent)
-
-        self._diamX = 0
-        self._diamY = 0
-        self._diameter = 20
+        self._diamX, self._diamY, self._diameter = 0, 0, 20
         self._color = QColor("red")
         self._alignment = Qt.AlignCenter
         self._state = True
         self._flashing = False
         self._flashRate = 200
-
         self._timer = QTimer()
         self._timer.timeout.connect(self.toggleState)
-
         self.setDiameter(self._diameter)
 
     def paintEvent(self, event):
@@ -52,7 +43,7 @@ class LedWidget(QWidget):
         if self._state:
             gradient.setColorAt(1, self._color)
         else:
-            gradient.setColorAt(1, Qt.black)
+            gradient.setColorAt(1, self._color.darker(250))
 
         painter.begin(self)
         brush = QBrush(gradient)
@@ -135,6 +126,10 @@ class LedWidget(QWidget):
     def stopFlashing(self):
         self.setFlashing(False)
 
+    def flashOnce(self):
+        self.toggleState()
+        self._timer.singleShot(200, self.toggleState)
+
     diameter = pyqtProperty(int, getDiameter, setDiameter)
     color = pyqtProperty(QColor, getColor, setColor)
     alignment = pyqtProperty(Qt.Alignment, getAlignment, setAlignment)
@@ -142,11 +137,3 @@ class LedWidget(QWidget):
     flashing = pyqtProperty(bool, isFlashing, setFlashing)
     flashRate = pyqtProperty(int, getFlashRate, setFlashRate)
 
-if __name__ == "__main__":
-
-    import sys
-
-    app = QApplication(sys.argv)
-    led = LedWidget()
-    led.show()
-    sys.exit(app.exec_())

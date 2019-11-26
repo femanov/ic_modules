@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from aux.Qt import QtGui, QtCore, QtWidgets
-from fwidgets import BaseGridW, FSpinBox
+from cxwidgets import BaseGridW, FSpinBox
 
 from acc_db.db import ModesDB
 from aux import str2u

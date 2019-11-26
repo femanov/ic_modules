@@ -1,5 +1,5 @@
-from aQt.QtWidgets import QLCDNumber
-from aQt.QtCore import pyqtSlot, pyqtProperty
+from cxwidgets.aQt.QtWidgets import QLCDNumber
+from cxwidgets.aQt.QtCore import pyqtSlot, pyqtProperty
 import pycx4.qcda as cda
 
 
@@ -11,7 +11,7 @@ class CXLCDNumber(QLCDNumber):
         self.cx_connect()
 
     def cx_connect(self):
-        if self._cname is None:
+        if self._cname is None or self._cname == '':
             return
         self.chan = cda.DChan(self._cname, private=True)
         self.chan.valueChanged.connect(self.cs_update)

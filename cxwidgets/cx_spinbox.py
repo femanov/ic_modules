@@ -1,30 +1,40 @@
-from aQt.QtCore import pyqtSlot, pyqtProperty, Qt
-from fwidgets import FCheckBox
+from cxwidgets.aQt.QtCore import pyqtSlot, pyqtProperty, Qt
 import pycx4.qcda as cda
+from .pspinbox import FSpinBox
 
 
-class CXCheckBox(FCheckBox):
+class CXSpinBox(FSpinBox):
     def __init__(self, parent=None, **kwargs):
-        super(CXCheckBox, self).__init__(parent, **kwargs)
+        super(CXSpinBox, self).__init__(parent, **kwargs)
         self._cname = kwargs.get('cname', None)
         self.chan = None
+
         self.cx_connect()
         self.done.connect(self.cs_send)
 
+    def mousePressEvent(self, QMouseEvent):
+        if QMouseEvent.button() == Qt.LeftButton:
+            print("Left Button Clicked")
+        elif QMouseEvent.button() == Qt.RightButton:
+            #do what you want here
+            print("Right Button Clicked")
+
     def cx_connect(self):
-        if self._cname is None:
+        if self._cname is None or self._cname == '':
             return
         self.chan = cda.IChan(self._cname, private=True)
         self.chan.valueChanged.connect(self.cs_update)
 
-    @pyqtSlot(bool)
+    @pyqtSlot(int)
     def cs_send(self, value):
         if int(value) == self.chan.val:
             return
         self.chan.setValue(value)
 
     def cs_update(self, chan):
-        self.setValue(bool(chan.val))
+        if int(self.value()) == chan.val:
+            return
+        self.setValue(chan.val)
 
     @pyqtSlot(str)
     def set_cname(self, cname):
@@ -37,6 +47,4 @@ class CXCheckBox(FCheckBox):
         return self._cname
 
     cname = pyqtProperty(str, get_cname, set_cname)
-
-
 

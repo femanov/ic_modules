@@ -1,5 +1,5 @@
-from aQt.QtWidgets import QCheckBox
-from aQt.QtCore import pyqtSlot, pyqtProperty, pyqtSignal
+from cxwidgets.aQt.QtWidgets import QCheckBox
+from cxwidgets.aQt.QtCore import pyqtSlot, pyqtProperty, pyqtSignal
 
 
 class FCheckBox(QCheckBox):

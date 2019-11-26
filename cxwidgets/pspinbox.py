@@ -1,5 +1,5 @@
-from aQt.QtWidgets import QSpinBox
-from aQt.QtCore import pyqtSignal, Qt
+from cxwidgets.aQt.QtWidgets import QSpinBox
+from cxwidgets.aQt.QtCore import pyqtSignal, Qt
 
 class FSpinBox(QSpinBox):
     done = pyqtSignal(int)

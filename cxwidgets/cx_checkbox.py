@@ -1,18 +1,18 @@
-from aQt.QtCore import pyqtSlot, pyqtProperty, Qt
-from fwidgets import FSwitch
+from cxwidgets.aQt.QtCore import pyqtSlot, pyqtProperty
+from cxwidgets import FCheckBox
 import pycx4.qcda as cda
 
 
-class CXSwitch(FSwitch):
+class CXCheckBox(FCheckBox):
     def __init__(self, parent=None, **kwargs):
-        super(CXSwitch, self).__init__(parent)
+        super(CXCheckBox, self).__init__(parent, **kwargs)
         self._cname = kwargs.get('cname', None)
         self.chan = None
         self.cx_connect()
         self.done.connect(self.cs_send)
 
     def cx_connect(self):
-        if self._cname is None:
+        if self._cname is None or self._cname == '':
             return
         self.chan = cda.IChan(self._cname, private=True)
         self.chan.valueChanged.connect(self.cs_update)
@@ -37,3 +37,6 @@ class CXSwitch(FSwitch):
         return self._cname
 
     cname = pyqtProperty(str, get_cname, set_cname)
+
+
+

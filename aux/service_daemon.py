@@ -61,7 +61,7 @@ class QtService(Service):
 
     def pre_run(self):
         global QtCore
-        import aQt.QtCore as QtCore
+        import cxwidgets.aQt.QtCore as QtCore
 
         self.app = QtCore.QCoreApplication(sys.argv)
 
@@ -86,7 +86,7 @@ class CothreadQtService(Service):
 
     def pre_run(self):
         global QtCore, cothread
-        from aQt import QtCore
+        from cxwidgets.aQt import QtCore
         import cothread
 
         self.app = QtCore.QCoreApplication(sys.argv)

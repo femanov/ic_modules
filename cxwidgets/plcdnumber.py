@@ -1,4 +1,4 @@
-from aQt.QtWidgets import QLCDNumber
+from cxwidgets.aQt.QtWidgets import QLCDNumber
 #from aQt.QtCore import *
 
 

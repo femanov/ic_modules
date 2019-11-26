@@ -1,6 +1,6 @@
 # auxiliary widgets common for some programs
 
-from aQt.QtWidgets import QWidget, QGridLayout, QFrame, QGroupBox
+from cxwidgets.aQt.QtWidgets import QWidget, QGridLayout, QFrame
 
 
 class HLine(QFrame):

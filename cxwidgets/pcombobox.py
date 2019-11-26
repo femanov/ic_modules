@@ -1,5 +1,5 @@
-from aQt.QtWidgets import QComboBox
-from aQt.QtCore import pyqtSignal
+from cxwidgets.aQt.QtWidgets import QComboBox
+from cxwidgets.aQt.QtCore import pyqtSignal
 
 class FComboBox(QComboBox):
 

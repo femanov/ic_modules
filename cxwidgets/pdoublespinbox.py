@@ -1,5 +1,5 @@
-from aQt.QtCore import Qt, pyqtSignal
-from aQt.QtWidgets import QDoubleSpinBox
+from cxwidgets.aQt.QtCore import Qt, pyqtSignal
+from cxwidgets.aQt.QtWidgets import QDoubleSpinBox
 
 
 # class SpinWheelEventFilter(QObject):

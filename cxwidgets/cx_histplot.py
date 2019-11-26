@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from aQt import QtCore, QtWidgets, QtGui
+from cxwidgets.aQt import QtWidgets, QtCore
 import pycx4.qcda as cda
 import pyqtgraph as pg
 import numpy as np

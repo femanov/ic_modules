@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 from PyQt5.QtWidgets import QApplication, QPushButton, QAbstractButton, QSizePolicy
 from PyQt5.QtGui import QBrush, QPen, QColor, QPainter
 from PyQt5.QtCore import Qt, QRect, pyqtSignal, pyqtSlot, pyqtProperty, QSize
@@ -20,12 +19,12 @@ class FSwitch(QPushButton):
         self.a_ratio = 2.2
         self.toggled.connect(self.done)
 
-    def heightForWidth(self, width):
-        return width / self.a_ratio
-
     @pyqtSlot(bool)
     def setValue(self, value):
         self.setChecked(value)
+
+    def heightForWidth(self, width):
+        return width / self.a_ratio
 
     def paintEvent(self, event):
         bg_color = Qt.green if self.isChecked() else Qt.red
@@ -33,11 +32,6 @@ class FSwitch(QPushButton):
         s = self.size()
         w0 = s.width()
         h0 = s.height()
-
-        # if w0/h0 > self.a_ratio:
-        #     print('too wide')
-        # else:
-        #     print('to narrow')
 
         w = w0 - 2*pen_width - 2
         h = w/2 if w/2 < h0 - 2*pen_width else h0 - 2*pen_width

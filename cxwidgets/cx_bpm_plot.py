@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import sys
-from aQt import QtCore, QtWidgets, QtGui
-from aQt.QtCore import Qt
+from cxwidgets.aQt import QtWidgets, QtCore, QtGui
+from cxwidgets.aQt.QtCore import Qt
 import pyqtgraph as pg
-from fwidgets.auxwidgets import BaseFrameGridW
+from cxwidgets.auxwidgets import BaseFrameGridW
 import math
 
 
@@ -141,7 +141,7 @@ class BPMView(pg.GraphicsView):
         self.beam.setBeamPos(x * self.scale_x, z * self.scale_z)
 
     def sizeHint(self):
-        return QtCore.QSize(self.x_size+5, self.z_size+5)
+        return QtCore.QSize(self.x_size + 5, self.z_size + 5)
 
     def minimumSizeHint(self):
         #return QtCore.QSize(self.x_size + 10, self.z_size + 10)

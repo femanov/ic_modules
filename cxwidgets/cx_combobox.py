@@ -1,6 +1,6 @@
-from aQt.QtWidgets import QComboBox
-from aQt.QtGui import QIcon, QColor
-from aQt.QtCore import pyqtSlot, pyqtProperty, Qt
+from cxwidgets.aQt.QtWidgets import QComboBox
+from cxwidgets.aQt.QtGui import QIcon, QColor
+from cxwidgets.aQt.QtCore import pyqtSlot, pyqtProperty, Qt
 import pycx4.qcda as cda
 
 
@@ -35,7 +35,7 @@ class CXTextComboBox(QComboBox):
                self.setStyleSheet('QComboBox {background: ' + self._colors[ind] + ";}")
 
     def cx_connect(self):
-        if self._cname is None:
+        if self._cname is None or self._cname == '':
             return
         self.chan = cda.StrChan(self._cname, max_nelems=self._max_len, private=True)
         self.chan.valueChanged.connect(self.cs_update)
