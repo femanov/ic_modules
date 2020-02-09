@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from aux.Qt import QtGui, QtCore, QtWidgets
-from cxwidgets import BaseGridW, FSpinBox
+from cxwidgets import BaseGridW, PSpinBox
 
 from acc_db.db import ModesDB
 from aux import str2u
@@ -134,19 +134,19 @@ class ModeListFilter(BaseGridW):
         self.grid.addWidget(self.prev_b, 1, 0)
         self.prev_b.clicked.connect(self.prev_cb)
 
-        self.nrows_box = FSpinBox()
+        self.nrows_box = PSpinBox()
         self.grid.addWidget(self.nrows_box, 1, 1)
         self.nrows_box.done.connect(self.nrows_cb)
 
         self.grid.addWidget(QtWidgets.QLabel("@"), 1, 2)
 
-        self.startrow_box = FSpinBox()
+        self.startrow_box = PSpinBox()
         self.grid.addWidget(self.startrow_box, 1, 3)
         self.startrow_box.done.connect(self.startrow_cb)
 
         self.grid.addWidget(QtWidgets.QLabel("of"), 1, 4)
 
-        self.maxrows_box = FSpinBox()
+        self.maxrows_box = PSpinBox()
         self.grid.addWidget(self.maxrows_box, 1, 5)
         self.maxrows_box.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
         self.maxrows_box.setReadOnly(True)
@@ -376,19 +376,19 @@ class ModeListCtrl(BaseGridW):
         self.grid_filter.addWidget(self.prev_b, 1, 0)
         self.prev_b.clicked.connect(self.prev_cb)
 
-        self.nrows_box = FSpinBox()
+        self.nrows_box = PSpinBox()
         self.grid_filter.addWidget(self.nrows_box, 1, 1)
         self.nrows_box.done.connect(self.nrows_cb)
 
         self.grid_filter.addWidget(QtWidgets.QLabel("@"), 1, 2)
 
-        self.startrow_box = FSpinBox()
+        self.startrow_box = PSpinBox()
         self.grid_filter.addWidget(self.startrow_box, 1, 3)
         self.startrow_box.done.connect(self.startrow_cb)
 
         self.grid_filter.addWidget(QtWidgets.QLabel("of"), 1, 4)
 
-        self.maxrows_box = FSpinBox()
+        self.maxrows_box = PSpinBox()
         self.grid_filter.addWidget(self.maxrows_box, 1, 5)
         self.maxrows_box.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
         self.maxrows_box.setReadOnly(True)
