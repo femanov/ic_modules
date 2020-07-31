@@ -74,7 +74,6 @@ class SysTreeWidget(QTreeWidget):
         self.show_unsorted = kwargs.get('show_unsorted', False)
 
         self.sel_icons = {
-
             'sys': {
                 UNSELECTED: QIcon(modpath + '/img/icon_forb.jpg'),
                 SELECTED: QIcon(modpath + '/img/icon_allow.jpg'),
@@ -83,31 +82,23 @@ class SysTreeWidget(QTreeWidget):
             'dev': {
                 UNSELECTED: QIcon(modpath + '/img/dev_unsel.png'),
                 SELECTED: QIcon(modpath + '/img/dev_sel.png'),
-                #PARTLY: QIcon(modpath + '/img/icon_part.jpg')
             }
-
         }
 
         self.db_tree = Sys.get_tree() if self.top_id == 0 else Sys.get_tree(parent=Sys.objects.get(pk=self.top_id))
-        self.steplen = Sys.steplen
+        steplen = Sys.steplen
+        top_depth = self.db_tree[0].depth
 
         self.path_id = {x.path: x.id for x in self.db_tree}
-        self.id_tpath = {x.id: x.path for x in self.db_tree}
-        self.id_tree = {x.id: x for x in self.db_tree}
-
-        self.id_path = {k: [self.path_id[x] for x in self.item_ancestors_path(v)] for (k, v) in self.id_tpath.items()}
 
         self.selected = {'sys': set(),
                          'dev': set()}
         self.sys_id_ws = {}
         self.dev_id_ws = {}
-        for x in self.db_tree:
-            if len(self.id_path[x.id]) == 0:
-                parent = self
-            else:
-                parent = self.sys_id_ws[self.id_path[x.id][-1]]
 
-            w = SysDevTreeItem(parent, db_name=x.name, db_type='sys', db_id=x.id, path=x.path, desc=x.description)
+        for x in self.db_tree:
+            par = self if x.depth == top_depth else self.sys_id_ws[self.path_id[x.path[:-1*steplen]]]
+            w = SysDevTreeItem(par, db_name=x.name, db_type='sys', db_id=x.id, path=x.path, desc=x.description)
             self.sys_id_ws[x.id] = w
 
             if self.show_devs:
@@ -199,18 +190,10 @@ class SysTreeWidget(QTreeWidget):
                     return None
             return None
 
-    def item_ancestors_path(self, path):
-        return [path[:(x+1)*self.steplen] for x in range(int(len(path)/self.steplen) - 1)]
-
-    def item_descendants_path(self, path):
-        return [x.path for x in self.db_tree if x.path.startswith(path) and len(x.path) > len(path)]
-
-
-
 if __name__=='__main__':
     app = QApplication(['dev_tree'])
 
-    w = SysTreeWidget(show_devs=True)
+    w = SysTreeWidget(show_devs=True, top_id=42)
     w.resize(400, 800)
     w.show()
     w.sysSelectionChanged.connect(print)
