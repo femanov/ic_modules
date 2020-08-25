@@ -1,10 +1,13 @@
-#
 # machine modes server and client classes implementation
 # by Fedor Emanov
-
-from aux.Qt import QtCore
-import pycx4.qcda as cda
+import sys
 import json
+
+if "pycx4.qcda" in sys.modules:
+    import pycx4.qcda as cda
+elif "pycx4.pycda" in sys.modules:
+    import pycx4.pycda as cda
+
 from settings.cx import *
 
 
@@ -16,9 +19,9 @@ def cmd_text(cmd, params={}):
 
 
 # abstract mode ctl - base for others
-class ModesCtl(QtCore.QObject):
+class ModesCtl:
     def __init__(self):
-        super(ModesCtl, self).__init__()
+        super().__init__()
 
         # create command and result channels
         self.cmd_chan = cda.StrChan(ctl_server + ".modectl.cmd", max_nelems=1024, on_update=True, privete=True)
@@ -35,24 +38,24 @@ class ModesCtl(QtCore.QObject):
 
 class ModesClient(ModesCtl):
     # signals for mode save/load
-    modeSaved = QtCore.pyqtSignal(dict)   # emited when recieved deamon mesage "mode saved"
-    modeLoaded = QtCore.pyqtSignal(dict)  # emited when recieved deamon mesage "mode"
+    modeSaved = cda.Signal(dict)   # emited when recieved deamon mesage "mode saved"
+    modeLoaded = cda.Signal(dict)  # emited when recieved deamon mesage "mode"
 
     # signals for automatic control
-    markedLoaded = QtCore.pyqtSignal(str)   # emited when switched to marked mode
-    markedReady = QtCore.pyqtSignal()
-    walkerDone = QtCore.pyqtSignal(str)
+    markedLoaded = cda.Signal(str)   # emited when switched to marked mode
+    markedReady = cda.Signal()
+    walkerDone = cda.Signal(str)
 
-    zerosDone = QtCore.pyqtSignal(dict)
+    zerosDone = cda.Signal(dict)
 
     #auxilary signals
-    update = QtCore.pyqtSignal()  # emited when server instructs clients to update DB info
+    update = cda.Signal()  # emited when server instructs clients to update DB info
 
     def __init__(self, use_modeswitcher=False):
         super(ModesClient, self).__init__()
 
         self.mode_mark = None
-        self.timer = QtCore.QTimer()
+        self.timer = cda.Timer()
         self.delay = 100
 
         self.proto_ver = 0.901
@@ -126,12 +129,12 @@ class ModesClient(ModesCtl):
 
 
 class ModesServer(ModesCtl):
-    save = QtCore.pyqtSignal(str, str)
-    load = QtCore.pyqtSignal(int, list, list)
-    loadMarked = QtCore.pyqtSignal(str, list, list)
-    setZeros = QtCore.pyqtSignal(list, list)
-    markMode = QtCore.pyqtSignal(int, str, str, str)
-    walkerLoad = QtCore.pyqtSignal(dict, dict)
+    save = cda.Signal(str, str)
+    load = cda.Signal(int, list, list)
+    loadMarked = cda.Signal(str, list, list)
+    setZeros = cda.Signal(list, list)
+    markMode = cda.Signal(int, str, str, str)
+    walkerLoad = cda.Signal(dict, dict)
 
     def __init__(self):
         super(ModesServer, self).__init__()

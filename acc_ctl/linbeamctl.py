@@ -1,5 +1,9 @@
-import pycx4.q5cda as cda
-from PyQt5.QtCore import QObject, pyqtSignal
+import sys
+
+if "pycx4.qcda" in sys.modules:
+    import pycx4.qcda as cda
+elif "pycx4.pycda" in sys.modules:
+    import pycx4.pycda as cda
 
 
 def linbeam_state(cav_h_val):
@@ -11,10 +15,10 @@ def linbeam_state(cav_h_val):
 
 
 # the class to close linac beam with cav_h corrector and observe state
-class LinBeamCtl(QObject):
-    stateRequested = pyqtSignal(str)
-    stateChanged = pyqtSignal(str)
-    stateMeas = pyqtSignal(str)
+class LinBeamCtl:
+    stateRequested = cda.Signal(str)
+    stateChanged = cda.Signal(str)
+    stateMeas = cda.Signal(str)
 
     def __init__(self):
         super(LinBeamCtl, self).__init__()

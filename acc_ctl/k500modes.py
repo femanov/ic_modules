@@ -1,10 +1,15 @@
+import sys
+import numpy as np
+import time
 
-from PyQt5.QtCore import QObject, pyqtSignal
+if "pycx4.qcda" in sys.modules:
+    import pycx4.qcda as cda
+elif "pycx4.pycda" in sys.modules:
+    import pycx4.pycda as cda
+
 from acc_ctl.magwalker import MagWalker
 from acc_ctl import mode_ser
 from acc_ctl.mode_defs import *
-import numpy as np
-import time
 
 remag_srv = 'canhw:12'
 remag_devs = ['d3m4n5', 'd5M1t4', 'd6M1t4']
@@ -34,11 +39,11 @@ def remag_mode(val_dict):
     return None
 
 
-class K500Director(QObject):
-    done = pyqtSignal()
-    modeTargUpdate = pyqtSignal(str)
-    modeCurUpdate = pyqtSignal(str)
-    progressing = pyqtSignal(int)
+class K500Director:
+    done = cda.Signal()
+    modeTargUpdate = cda.Signal(str)
+    modeCurUpdate = cda.Signal(str)
+    progressing = cda.Signal(int)
 
     def __init__(self):
         super(K500Director, self).__init__()

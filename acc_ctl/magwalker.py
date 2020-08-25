@@ -1,14 +1,17 @@
-from aux.Qt import QtCore
-import pycx4.qcda as cda
+import sys
 import numpy as np
+
+if "pycx4.qcda" in sys.modules:
+    import pycx4.qcda as cda
+elif "pycx4.pycda" in sys.modules:
+    import pycx4.pycda as cda
 
 # array example to demag spectrometer: a = [2500 * ((-0.7)**x) for x in range(20)]
 
-
-class MagWalker(QtCore.QObject):
-    done = QtCore.pyqtSignal(str)
-    progressing = QtCore.pyqtSignal(str, int)
-    started = QtCore.pyqtSignal(str)
+class MagWalker:
+    done = cda.Signal(str)
+    progressing = cda.Signal(str, int)
+    started = cda.Signal(str)
 
     def __init__(self, devname, name=None):
         super(MagWalker, self).__init__()
