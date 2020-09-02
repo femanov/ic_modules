@@ -2,14 +2,12 @@
 # by Fedor Emanov
 import sys
 import json
-
 if "pycx4.qcda" in sys.modules:
     import pycx4.qcda as cda
 elif "pycx4.pycda" in sys.modules:
     import pycx4.pycda as cda
 
-from settings.cx import *
-
+from settings.cx import ctl_server
 
 def cmd_text(cmd, params={}):
     cdict = {}
@@ -40,14 +38,11 @@ class ModesClient(ModesCtl):
     # signals for mode save/load
     modeSaved = cda.Signal(dict)   # emited when recieved deamon mesage "mode saved"
     modeLoaded = cda.Signal(dict)  # emited when recieved deamon mesage "mode"
-
+    zerosDone = cda.Signal(dict)
     # signals for automatic control
     markedLoaded = cda.Signal(str)   # emited when switched to marked mode
     markedReady = cda.Signal()
     walkerDone = cda.Signal(str)
-
-    zerosDone = cda.Signal(dict)
-
     #auxilary signals
     update = cda.Signal()  # emited when server instructs clients to update DB info
 

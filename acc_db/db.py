@@ -1,12 +1,6 @@
 import psycopg2
 import time
-#from io import BytesIO
-import simplejson as json
-
 import psycopg2.extensions
-psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
-psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
-
 from settings.db import acc_cfg, mode_db_cfg
 
 
@@ -62,7 +56,6 @@ class AccConfig(DBWrapper):
         if 'dbname' not in kwargs or 'user' not in kwargs:
             kwargs.update(acc_cfg)
         super(AccConfig, self).__init__(**kwargs)
-
 
     def fchans(self):
         self.execute("SELECT * FROM fchans()")
