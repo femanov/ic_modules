@@ -102,7 +102,7 @@ class SysTreeWidget(QTreeWidget):
             self.sys_id_ws[x.id] = w
 
             if self.show_devs:
-                devs = x.devs.all()
+                devs = x.devs.order_by('ord')
                 for d in devs:
                     wd = SysDevTreeItem(w, db_name=d.name, db_type='dev', db_id=d.id, desc=x.description)
                     if d.id in self.dev_id_ws:
@@ -193,7 +193,7 @@ class SysTreeWidget(QTreeWidget):
 if __name__=='__main__':
     app = QApplication(['dev_tree'])
 
-    w = SysTreeWidget(show_devs=True, top_id=42)
+    w = SysTreeWidget(show_devs=True, top_id=0)
     w.resize(400, 800)
     w.show()
     w.sysSelectionChanged.connect(print)
