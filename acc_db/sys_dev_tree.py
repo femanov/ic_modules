@@ -19,11 +19,12 @@ class SysDevTreeItem(QTreeWidgetItem):
     def __init__(self, parent, **kwargs):
         super().__init__(parent)
         self.db_name = kwargs.get('db_name', 'name')
+        self.label = kwargs.get('label', self.db_name)
         self.db_type = kwargs.get('db_type', 'type')
         self.db_id = kwargs.get('db_id', 0)
         self.path = kwargs.get('path', "")
         self.description = kwargs.get('desc', '')
-        self.setText(0,self.db_name)
+        self.setText(0,self.label)
         self.setToolTip(0, self.description)
         self.set_state(UNSELECTED)
 
@@ -98,24 +99,23 @@ class SysTreeWidget(QTreeWidget):
 
         for x in self.db_tree:
             par = self if x.depth == top_depth else self.sys_id_ws[self.path_id[x.path[:-1*steplen]]]
-            w = SysDevTreeItem(par, db_name=x.name, db_type='sys', db_id=x.id, path=x.path, desc=x.description)
+            w = SysDevTreeItem(par, db_name=x.name, label=x.label, db_type='sys', db_id=x.id, path=x.path, desc=x.description)
             self.sys_id_ws[x.id] = w
 
             if self.show_devs:
                 devs = x.devs.order_by('ord')
                 for d in devs:
-                    wd = SysDevTreeItem(w, db_name=d.name, db_type='dev', db_id=d.id, desc=x.description)
+                    wd = SysDevTreeItem(w, db_name=d.name, label=d.label, db_type='dev', db_id=d.id, desc=x.description)
                     if d.id in self.dev_id_ws:
                         self.dev_id_ws[d.id].append(wd)
                     else:
                         self.dev_id_ws[d.id] = [wd]
 
-        # if self.show_devs and self.show_unsorted:
-        #     w = QTreeWidgetItem(self, ['unsorted_devs'])
-        #     unsorted_devs = Dev.objects.filter(sys__isnull=True)
-        #     for d in unsorted_devs:
-        #         wd = QTreeWidgetItem(w, [d.name])
-        #         wd.setToolTip(0, d.description)
+        if self.show_devs and self.show_unsorted:
+            w = SysDevTreeItem(self, db_name='unsorted', db_type='sys', db_id=0, desc='no any sys for this devs')
+            unsorted_devs = Dev.objects.filter(sys__isnull=True)
+            for d in unsorted_devs:
+                SysDevTreeItem(w, db_name=d.name, label=d.label, db_type='dev', db_id=d.id, desc=x.description)
 
         self.itemPressed.connect(self.item_click_cb)
         self.header().hide()
@@ -193,7 +193,7 @@ class SysTreeWidget(QTreeWidget):
 if __name__=='__main__':
     app = QApplication(['dev_tree'])
 
-    w = SysTreeWidget(show_devs=True, top_id=0)
+    w = SysTreeWidget(show_devs=True, show_unsorted=True, top_id=0)
     w.resize(400, 800)
     w.show()
     w.sysSelectionChanged.connect(print)
