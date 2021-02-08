@@ -111,8 +111,9 @@ class SysTreeWidget(QTreeWidget):
                     else:
                         self.dev_id_ws[d.id] = [wd]
 
+        # this is for db check only, not working correct yet
         if self.show_devs and self.show_unsorted:
-            w = SysDevTreeItem(self, db_name='unsorted', db_type='sys', db_id=0, desc='no any sys for this devs')
+            w = SysDevTreeItem(self, db_name='unsorted', db_type='sys', db_id=0, desc='no any sys for this devs-+')
             unsorted_devs = Dev.objects.filter(sys__isnull=True)
             for d in unsorted_devs:
                 SysDevTreeItem(w, db_name=d.name, label=d.label, db_type='dev', db_id=d.id, desc=x.description)
