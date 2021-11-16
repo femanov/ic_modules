@@ -105,7 +105,7 @@ class SysTreeWidget(QTreeWidget):
             if self.show_devs:
                 devs = x.devs.order_by('ord')
                 for d in devs:
-                    wd = SysDevTreeItem(w, db_name=d.name, label=d.label, db_type='dev', db_id=d.id, desc=x.description)
+                    wd = SysDevTreeItem(w, db_name=d.name, label=d.label, db_type='dev', db_id=d.id, desc=d.description)
                     if d.id in self.dev_id_ws:
                         self.dev_id_ws[d.id].append(wd)
                     else:
@@ -116,7 +116,7 @@ class SysTreeWidget(QTreeWidget):
             w = SysDevTreeItem(self, db_name='unsorted', db_type='sys', db_id=0, desc='no any sys for this devs-+')
             unsorted_devs = Dev.objects.filter(sys__isnull=True)
             for d in unsorted_devs:
-                SysDevTreeItem(w, db_name=d.name, label=d.label, db_type='dev', db_id=d.id, desc=x.description)
+                SysDevTreeItem(w, db_name=d.name, label=d.label, db_type='dev', db_id=d.id, desc=d.description)
 
         self.itemPressed.connect(self.item_click_cb)
         self.header().hide()

@@ -25,7 +25,7 @@ class MyTestW(QWidget):
         self.grid.addWidget(QLabel("selected devs"), 0, 2)
         self.grid.addWidget(QLabel("last dev chans"), 0, 3)
 
-        self.tree = SysTreeWidget(show_devs=True)
+        self.tree = SysTreeWidget(show_devs=True, show_unsorted=True)
         self.grid.addWidget(self.tree, 1, 0)
 
         self.sys_text = QTextEdit()
