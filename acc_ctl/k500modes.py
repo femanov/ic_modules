@@ -40,13 +40,12 @@ def remag_mode(val_dict):
 
 
 class K500Director:
-    done = cda.Signal()
-    modeTargUpdate = cda.Signal(str)
-    modeCurUpdate = cda.Signal(str)
-    progressing = cda.Signal(int)
-
     def __init__(self):
         super(K500Director, self).__init__()
+        self.done = cda.InstSignal()
+        self.modeTargUpdate = cda.InstSignal(str)
+        self.modeCurUpdate = cda.InstSignal(str)
+        self.progressing = cda.InstSignal(int)
 
         self.mode_ctl = mode_ser.ModesClient()
 

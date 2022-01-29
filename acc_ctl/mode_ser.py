@@ -35,19 +35,18 @@ class ModesCtl:
 
 
 class ModesClient(ModesCtl):
-    # signals for mode save/load
-    modeSaved = cda.Signal(dict)   # emited when recieved deamon mesage "mode saved"
-    modeLoaded = cda.Signal(dict)  # emited when recieved deamon mesage "mode"
-    zerosDone = cda.Signal(dict)
-    # signals for automatic control
-    markedLoaded = cda.Signal(str)   # emited when switched to marked mode
-    markedReady = cda.Signal()
-    walkerDone = cda.Signal(str)
-    #auxilary signals
-    update = cda.Signal()  # emited when server instructs clients to update DB info
-
     def __init__(self, use_modeswitcher=False):
         super(ModesClient, self).__init__()
+        # signals for mode save/load
+        self.modeSaved = cda.InstSignal(dict)  # emited when recieved deamon mesage "mode saved"
+        self.modeLoaded = cda.InstSignal(dict)  # emited when recieved deamon mesage "mode"
+        self.zerosDone = cda.InstSignal(dict)
+        # signals for automatic control
+        self.markedLoaded = cda.InstSignal(str)  # emited when switched to marked mode
+        self.markedReady = cda.InstSignal()
+        self.walkerDone = cda.InstSignal(str)
+        # auxilary signals
+        self.update = cda.InstSignal()  # emited when server instructs clients to update DB info
 
         self.mode_mark = None
         self.timer = cda.Timer()
@@ -124,15 +123,14 @@ class ModesClient(ModesCtl):
 
 
 class ModesServer(ModesCtl):
-    save = cda.Signal(str, str)
-    load = cda.Signal(int, list, list)
-    loadMarked = cda.Signal(str, list, list)
-    setZeros = cda.Signal(list, list)
-    markMode = cda.Signal(int, str, str, str)
-    walkerLoad = cda.Signal(dict, dict)
-
     def __init__(self):
         super(ModesServer, self).__init__()
+        self.save = cda.InstSignal(str, str)
+        self.load = cda.InstSignal(int, list, list)
+        self.loadMarked = cda.InstSignal(str, list, list)
+        self.setZeros = cda.InstSignal(list, list)
+        self.markMode = cda.InstSignal(int, str, str, str)
+        self.walkerLoad = cda.InstSignal(dict, dict)
 
     def cmd_cb(self, chan):
         try:

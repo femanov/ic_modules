@@ -9,12 +9,13 @@ elif "pycx4.pycda" in sys.modules:
 # array example to demag spectrometer: a = [2500 * ((-0.7)**x) for x in range(20)]
 
 class MagWalker:
-    done = cda.Signal(str)
-    progressing = cda.Signal(str, int)
-    started = cda.Signal(str)
 
     def __init__(self, devname, name=None):
         super(MagWalker, self).__init__()
+        self.done = cda.InstSignal(str)
+        self.progressing = cda.InstSignal(str, int)
+        self.started = cda.InstSignal(str)
+
         self.devname = devname
         self.name = name
         if name is None:

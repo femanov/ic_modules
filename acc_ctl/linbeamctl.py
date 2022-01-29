@@ -16,12 +16,11 @@ def linbeam_state(cav_h_val):
 
 # the class to close linac beam with cav_h corrector and observe state
 class LinBeamCtl:
-    stateRequested = cda.Signal(str)
-    stateChanged = cda.Signal(str)
-    stateMeas = cda.Signal(str)
-
     def __init__(self):
         super(LinBeamCtl, self).__init__()
+        self.stateRequested = cda.InstSignal(str)
+        self.stateChanged = cda.InstSignal(str)
+        self.stateMeas = cda.InstSignal(str)
 
         self.cav_h_iset_chan = cda.DChan('canhw:11.rst1.CAV_H.Iset', on_update=True)
         self.cav_h_imeas_chan = cda.DChan('canhw:11.rst1.CAV_H.Imes', on_update=True)
