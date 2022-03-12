@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
 from cxwidgets import PCheckBox
 
-from acc_db.db import ModesDB
+from acc_db.db import AccConfig, ModesDB
 
 
 class KindTable(QTableWidget):
@@ -16,8 +16,8 @@ class KindTable(QTableWidget):
         self.horizontalHeader().setVisible(False)
 
         # database connect
-        self.db = ModesDB()
-        self.kinds = self.db.access_kinds()
+        self.db = AccConfig()
+        self.kinds = self.db.loadable_access_kinds()
         self.checkers = []
 
         self.setRowCount(len(self.kinds))

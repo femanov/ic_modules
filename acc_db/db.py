@@ -81,6 +81,11 @@ class AccConfig(DBWrapper):
         self.execute("SELECT ARRAY(SELECT access FROM caccess_type WHERE savable)")
         return self.cur.fetchall()[0][0]
 
+    def loadable_access_kinds(self):
+        self.execute("SELECT ARRAY(SELECT access FROM caccess_type WHERE savable and load_implemented)")
+        return self.cur.fetchall()[0][0]
+
+
     def sys_descendants(self, sys_name, **kwargs):
         return_empty = kwargs.get('return_empty', True)
         #sys_name = kwargs.get('sys_name', False)
