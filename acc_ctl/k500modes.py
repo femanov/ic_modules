@@ -25,6 +25,7 @@ remag_vals = {
 
 remag_tolerance = 0.05
 
+
 def remag_mode(val_dict):
     for mode in remag_vals:
         this_mode = True
@@ -113,6 +114,5 @@ class K500Director:
             return
         mag_path = {name: mode_path(name, self.cur_mode, target_mode) for name in remag_devs}
         coefs = {name: coefs_set[name][path_set[name].index(mag_path[name])] for name in mag_path}
-        print(coefs)
         self.mode_ctl.walker_load(mag_path, coefs)
 
