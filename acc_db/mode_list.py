@@ -16,13 +16,14 @@ class ModeList(QtWidgets.QTableWidget):
     modeUpdated = QtCore.pyqtSignal()
 
     def __init__(self, parent=None, **kwargs):
-        super(ModeList, self).__init__(parent)
+        super().__init__(parent)
         self.modes_db = kwargs.get('db', ModesDB())
 
         self.selected_row = None
         self.modes = None
         self.marked_modes = None
         self.all_modes = None
+        self.selected_mode = None
 
         self.cellClicked.connect(self.mode_select)
         self.cellChanged.connect(self.item_edit_proc)
@@ -37,7 +38,7 @@ class ModeList(QtWidgets.QTableWidget):
         self.setColumnWidth(3, 60)
         self.setColumnWidth(4, 60)
 
-        self.update_modelist(update_marked=True)
+        self.update_modelist({'update_marked': True})
 
         self.background_color = self.item(0, 0).background()
         self.selected_color = QtGui.QColor(200, 255, 255)
@@ -56,13 +57,15 @@ class ModeList(QtWidgets.QTableWidget):
             self.all_modes[row][col+1] = c_text
             self.modeUpdated.emit()
 
-    def update_modelist(self, **kwargs):
+    def update_modelist(self, params):
         self.updating_list = True
-        limit = kwargs.get('limit', 100)
-        offset = kwargs.get('offset', 0)
-        update_marked = kwargs.get('update_marked', False)
-        filter = kwargs.get('filter', None)
-        load_archived = kwargs.get('load_archived', False)
+        limit = params.get('limit', 100)
+        offset = params.get('offset', 0)
+        update_marked = params.get('update_marked', False)
+        filter = params.get('filter', None)
+        load_archived = params.get('load_archived', False)
+
+        self.mode_unselect()
 
         if update_marked:
             self.marked_modes = [list(x) for x in self.modes_db.marked_modes([1, 2, 3, 4, 5, 6, 7, 8])]
@@ -98,7 +101,6 @@ class ModeList(QtWidgets.QTableWidget):
                 if rind == 5:
                     item.setBackground(mode_qcolors.get(rtext, def_qcolor))
         self.resizeRowsToContents()
-        self.mode_unselect()
         self.updating_list = False
 
     def mode_select(self, row, col):
@@ -107,7 +109,8 @@ class ModeList(QtWidgets.QTableWidget):
         self.item(row, 0).setBackground(self.selected_color)
         self.item(row, 1).setBackground(self.selected_color)
         self.item(row, 2).setBackground(self.selected_color)
-        self.modeSelected.emit(self.all_modes[row][0])
+        self.selected_mode = self.all_modes[row][0]
+        self.modeSelected.emit(self.selected_mode)
 
     def mode_unselect(self):
         if self.selected_row is not None:
@@ -115,6 +118,7 @@ class ModeList(QtWidgets.QTableWidget):
             self.item(self.selected_row, 1).setBackground(self.background_color)
             self.item(self.selected_row, 2).setBackground(self.background_color)
             self.selected_row = None
+            self.selected_mode = None
 
 
 class ModeListFilter(BaseGridW):
@@ -122,7 +126,7 @@ class ModeListFilter(BaseGridW):
     ctrlsUpdate = QtCore.pyqtSignal(dict)
 
     def __init__(self, parent=None):
-        super(ModeListFilter, self).__init__(parent)
+        super().__init__(parent)
 
         self.grid.addWidget(QtWidgets.QLabel("search"), 0, 0)
 
@@ -310,12 +314,14 @@ class ModeListFull(BaseGridW):
         self.filterw = ModeListFilter()
         self.grid.addWidget(self.filterw, 0, 0)
         self.update_modenum()
-        self.filterw.set_nrows(100)
-        self.filterw.ctrlsUpdate.connect(self.filter_cb)
 
         self.listw = ModeList(db=self.modes_db)
         self.grid.addWidget(self.listw, 1, 0)
+
         self.listw.modeSelected.connect(self.mode_sel_cb)
+        self.filterw.set_nrows(100)
+        self.filterw.ctrlsUpdate.connect(self.listw.update_modelist)
+
 
         self.ctrlw = ModeListBControls()
         self.grid.addWidget(self.ctrlw, 2, 0)
@@ -326,9 +332,6 @@ class ModeListFull(BaseGridW):
         self.save_blk.outMsg.connect(self.outMsg)
 
         self.selected_mode = None
-
-    def filter_cb(self, args):
-        self.listw.update_modelist(**args)
 
     def mode_sel_cb(self, mode_id):
         if self.selected_mode is None and mode_id > 0:

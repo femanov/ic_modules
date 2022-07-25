@@ -1,3 +1,4 @@
+
 import psycopg2
 import time
 import psycopg2.extensions
@@ -115,7 +116,7 @@ class ModesDB(DBWrapper):
         return self.cur.fetchall()
 
     def mode_list(self, limit=100, offset=0, like=None, load_archived=False):
-        if like is None:
+        if like is None or like == '':
             if load_archived:
                 self.execute("SELECT id,author,comment,stime,mode_type(id) FROM mode ORDER BY stime DESC LIMIT %s OFFSET %s",(limit, offset))
             else:
