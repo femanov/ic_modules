@@ -476,7 +476,7 @@ class ModeListCtrl(BaseGridW):
             'filter': self.filter,
             'update_marked': update_marked
         }
-        self.listw.update_modelist(**args)
+        self.listw.update_modelist(args)
 
     def update_modenum(self):
         self.modes_db.execute("select count(id) from mode")
