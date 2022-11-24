@@ -9,13 +9,19 @@ elif "pycx4.pycda" in sys.modules:
 class DaemonCtl:
     def __init__(self, ctrl_dev, srv=True):
         super().__init__()
-
         # create command and result channels
-        self.cmd_chan = cda.StrChan(ctrl_dev + ".cmd", max_nelems=1024, on_update=True, privete=True)
-        self.res_chan = cda.StrChan(ctrl_dev + ".res", max_nelems=1024, on_update=True, privete=True)
+        self.cmd_chan = cda.StrChan(f'{ctrl_dev}.cmd', max_nelems=1024, on_update=True, privete=True)
+        self.res_chan = cda.StrChan(f'{ctrl_dev}.res', max_nelems=1024, on_update=True, privete=True)
         self.cmd_chan.valueChanged.connect(self.cmd_cb)
         self.res_chan.valueMeasured.connect(self.res_cb)
         self.srv = srv
+
+        # creating signa
+        print(self.commands)
+        for x in self.commands:
+            if hasattr(self, x):
+                print('Warning! Attribute mapping intersection!')
+            setattr(self, x, cda.InstSignal(object))
 
     def cmd_cb(self, chan):
         if self.srv:
@@ -23,17 +29,17 @@ class DaemonCtl:
             chan.setValue('')
             if cdict is None:
                 return
-            self.reaction(cdict)
+            if 'cmd' in cdict:
+                if cdict['cmd'] == 'alive?':
+                    self.send_pack('alive')
+                if hasattr(self, cdict['cmd']):
+                    getattr(self, cdict['cmd']).emit(cdict)
 
     def res_cb(self, chan):
         if not self.srv:
             cdict = self.parse_pack(chan.val)
             if cdict is None:
                 return
-            self.reaction(cdict)
-
-    def reaction(self, cdict):
-        print(cdict)
 
     def parse_pack(self, pack_str):
         try:

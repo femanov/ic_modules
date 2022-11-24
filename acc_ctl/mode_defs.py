@@ -1,5 +1,7 @@
 # demag/remag path db for injection complex
 
+main_modes = ('e2v4', 'p2v4', 'e2v2', 'p2v2')
+
 mode_colors = {
     'einj': '#f0f0f0',
     'eext': '#f0f0f0',
