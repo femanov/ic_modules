@@ -32,11 +32,12 @@ class ModeList(QtWidgets.QTableWidget):
         self.horizontalHeader().hide()
         self.verticalHeader().hide()
         self.setColumnCount(6)
-        self.setColumnWidth(0, 130)
+        self.setColumnWidth(0, 80)
         self.setColumnWidth(1, 400)
-        self.setColumnWidth(2, 240)
+        self.setColumnWidth(2, 180)
         self.setColumnWidth(3, 60)
         self.setColumnWidth(4, 60)
+        self.setColumnWidth(5, 60)
 
         self.update_modelist({'update_marked': True})
 
