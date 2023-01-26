@@ -34,7 +34,7 @@ class ModeList(QtWidgets.QTableWidget):
         self.setColumnCount(6)
         self.setColumnWidth(0, 100)
         self.setColumnWidth(1, 400)
-        self.setColumnWidth(2, 220)
+        self.setColumnWidth(2, 230)
         self.setColumnWidth(3, 60)
         self.setColumnWidth(4, 60)
         self.setColumnWidth(5, 60)
