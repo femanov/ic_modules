@@ -118,22 +118,22 @@ class ModesDB(DBWrapper):
     def mode_list(self, limit=100, offset=0, like=None, load_archived=False):
         if like is None or like == '':
             if load_archived:
-                self.execute("SELECT id,author,comment,stime,mode_type(id) FROM mode ORDER BY stime DESC LIMIT %s OFFSET %s",(limit, offset))
+                self.execute("SELECT id,author,comment,stime,mode_energy(id),mode_type(id) FROM mode ORDER BY stime DESC LIMIT %s OFFSET %s",(limit, offset))
             else:
-                self.execute("SELECT id,author,comment,stime,mode_type(id) FROM mode WHERE archived=false ORDER BY stime DESC LIMIT %s OFFSET %s",(limit, offset))
+                self.execute("SELECT id,author,comment,stime,mode_energy(id),mode_type(id) FROM mode WHERE archived=false ORDER BY stime DESC LIMIT %s OFFSET %s",(limit, offset))
         else:
             if load_archived:
-                self.execute("SELECT id,author,comment,stime,mode_type(id) FROM mode"
+                self.execute("SELECT id,author,comment,stime,mode_energy(id),mode_type(id) FROM mode"
                              " WHERE author ILIKE %s or comment ILIKE %s ORDER BY stime DESC LIMIT %s OFFSET %s",
                              (like, like, limit, offset))
             else:
-                self.execute("SELECT id,author,comment,stime,mode_type(id) FROM mode"
+                self.execute("SELECT id,author,comment,stime,mode_energy(id),mode_type(id) FROM mode"
                              " WHERE archived=false and (author ILIKE %s or comment ILIKE %s) ORDER BY stime DESC LIMIT %s OFFSET %s",
                              (like, like, limit, offset))
         return self.cur.fetchall()
 
     def marked_modes(self, mark_ids):
-        self.execute("SELECT mode.id,mode.author,mode.comment,mode.stime,mode_type(mode.id),modemark.name FROM mode"
+        self.execute("SELECT mode.id,mode.author,mode.comment,mode.stime,mode_energy(mode.id),mode_type(mode.id),modemark.name FROM mode"
                     " LEFT JOIN modemark on mode.id = modemark.mode_id"
                     " WHERE modemark.id = ANY(%s) ORDER BY mode.stime DESC", (mark_ids,))
         return self.cur.fetchall()

@@ -31,7 +31,7 @@ class ModeList(QtWidgets.QTableWidget):
 
         self.horizontalHeader().hide()
         self.verticalHeader().hide()
-        self.setColumnCount(5)
+        self.setColumnCount(6)
         self.setColumnWidth(0, 130)
         self.setColumnWidth(1, 400)
         self.setColumnWidth(2, 240)
@@ -92,14 +92,14 @@ class ModeList(QtWidgets.QTableWidget):
             for rind in range(1, len(row)):
                 if rind == 3:
                     rtext = row[rind].strftime("%Y-%m-%d %H:%M:%S")
+                elif rind == 4:
+                    rtext = f'{row[rind]:.2f}'
                 else:
                     rtext = row[rind]
                 item = self.item(ind, rind-1)
                 item.setText(rtext)
-                if rind == 4:
+                if rind == 5 or rind == 6:
                     item.setBackground(mode_dqcolors.get(rtext, def_qcolor))
-                if rind == 5:
-                    item.setBackground(mode_qcolors.get(rtext, def_qcolor))
         self.resizeRowsToContents()
         self.updating_list = False
 
