@@ -34,10 +34,10 @@ class ModeList(QtWidgets.QTableWidget):
         self.setColumnCount(6)
         self.setColumnWidth(0, 100)
         self.setColumnWidth(1, 400)
-        self.setColumnWidth(2, 230)
-        self.setColumnWidth(3, 60)
-        self.setColumnWidth(4, 60)
-        self.setColumnWidth(5, 60)
+        self.setColumnWidth(2, 170)
+        self.setColumnWidth(3, 50)
+        self.setColumnWidth(4, 40)
+        self.setColumnWidth(5, 40)
 
         self.update_modelist({'update_marked': True})
 
@@ -92,7 +92,7 @@ class ModeList(QtWidgets.QTableWidget):
             row = self.all_modes[ind]
             for rind in range(1, len(row)):
                 if rind == 3:
-                    rtext = row[rind].strftime("%Y-%m-%d %H:%M:%S")
+                    rtext = f'{row[rind]:%Y-%m-%d %H:%M:%S}'
                 elif rind == 4:
                     rtext = f'{row[rind]:.2f}'
                 else:
