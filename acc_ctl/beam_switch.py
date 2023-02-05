@@ -1,10 +1,4 @@
-import sys
-if "pycx4.qcda" in sys.modules:
-    import pycx4.qcda as cda
-elif "pycx4.pycda" in sys.modules:
-    import pycx4.pycda as cda
-else:
-    import pycx4.pycda as cda
+import pycx4.pycda as cda
 from transitions import Machine
 
 
