@@ -1,4 +1,4 @@
-from pycx4.pycda import InstSignal, IChan, StrChan, Timer
+from pycx4.cda import InstSignal, IChan, StrChan, Timer
 from transitions import Machine
 
 states = ['fail',               # if some command not finished in expected time
@@ -31,36 +31,32 @@ transitions = [
     {'trigger': 'run_timed_out', 'source': 'counter_run', 'dest': 'fail'},
     {'trigger': 'reset', 'source': 'fail', 'dest': 'unknown'},
 
-    # {'trigger': 'update', 'source': 'counter_idle', 'dest': 'counter_run',
-    #  'conditions': ['is_counter', 'is_running']},
-
-    # {'trigger': 'update', 'source': '*', 'dest': 'on', 'conditions': ['is_on']},
-    # {'trigger': 'update', 'source': '*', 'dest': 'off', 'conditions': ['is_off']},
-    # {'trigger': 'update', 'source': '*', 'dest': 'turning_on', 'conditions': ['is_turning_on']},
-    # {'trigger': 'update', 'source': '*', 'dest': 'turning_off', 'conditions': ['is_turning_off']},
     # {'trigger': '', 'source': '', 'dest': ''},
-    # {'trigger': '', 'source': '', 'dest': ''},
-
     # 2DO: timeout on transition to failed state
 ]
 
 
 class LinStarter:
+    """
+    State machine for Linac start generator which controls injection
+    """
     def __init__(self):
-        super().__init__()
+        self.stateNotify = InstSignal(str)
         self.runmodeChanged = InstSignal(str)
         self.nshotsChanged = InstSignal(int)
+        self.runningNotify = InstSignal(bool)
         self.runDone = InstSignal()
 
         self.m = Machine(model=self, states=states, transitions=transitions, initial='unknown',
                          after_state_change=self.state_notify)
 
-        # state variables.
+        # state variables
         self.runmode = None
         self.runmode_req = False
         self.running = False
         self.run_req = False
         self.nshots = 0  # number of requested shots
+
         self.nshots_req = False
 
         self.c_runmode = IChan('syn_ie4.mode', on_update=True)
@@ -69,6 +65,7 @@ class LinStarter:
         self.c_start = IChan('syn_ie4.bum_start', on_update=True)
         self.c_stop = IChan('syn_ie4.bum_stop', on_update=True)
         self.c_nshots = IChan('syn_ie4.re_bum', on_update=True)
+        self.c_shots_left = IChan('syn_ie4.ie_bum', on_update=True)
 
         self.c_runmode.valueChanged.connect(self.c_runmode_cb)
         self.c_running.valueChanged.connect(self.c_running_cb)
@@ -78,11 +75,30 @@ class LinStarter:
         self.c_state = StrChan('linstarter.state', max_nelems=30)
         self.c_runmode_t = StrChan('linstarter.runmode', max_nelems=20)
 
+        #  channels
+        #  ic.syn.linRF.repRate    # really it's reprate divider
+        #  ic.syn.linBeam.repRate  # really it's reprate divider
+        self.c_fr_reprate = IChan('ic.syn.linRF.repRate', on_update=True)
+        self.c_beam_reprate = IChan('ic.syn.linBeam.repRate', on_update=True)
+        self.c_fr_reprate.valueChanged.connect(self.c_reprate_cb)
+        self.c_beam_reprate.valueChanged.connect(self.c_reprate_cb)
+        self.rep_rates = {}
+        self.beam_frq = 5
+
         self.run_timeout = Timer()
 
     def state_notify(self):
-        print(self.state)
         self.c_state.setValue(self.state)
+        self.stateNotify.emit(self.state)
+
+    def c_reprate_cb(self, chan):
+        self.rep_rates[chan.name] = chan.val
+        f = 50.0
+        for x in self.rep_rates.values():
+            f /= x
+        self.beam_frq = f
+        print(self.beam_frq)
+
 
     def c_runmode_cb(self, chan):
         self.runmode = 'counter' if chan.val == 1 else 'continuous'  # not totally correct
@@ -95,14 +111,14 @@ class LinStarter:
 
     def c_running_cb(self, chan):
         self.running = bool(chan.val)
-        print('running:', self.running)
         if self.state == 'counter_idle' or self.state == 'counter_start':
             self.running_update()
+        self.runningNotify.emit(self.running)
 
     def c_lamsig_cb(self, chan):
-        print('LAM recieved')
         self.running = False
         self.run_done()
+        self.runDone.emit()
 
     def is_counter(self):
         return True if self.runmode == 'counter' else False
