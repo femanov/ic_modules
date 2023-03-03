@@ -46,6 +46,7 @@ class LinStarter:
         self.nshotsChanged = InstSignal(int)
         self.runningNotify = InstSignal(bool)
         self.runDone = InstSignal()
+        self.expRuntimeUpdate = InstSignal(float)
 
         self.m = Machine(model=self, states=states, transitions=transitions, initial='unknown',
                          after_state_change=self.state_notify)
@@ -55,8 +56,7 @@ class LinStarter:
         self.runmode_req = False
         self.running = False
         self.run_req = False
-        self.nshots = 0  # number of requested shots
-
+        self.nshots = 1  # number of requested shots
         self.nshots_req = False
 
         self.c_runmode = IChan('syn_ie4.mode', on_update=True)
@@ -64,26 +64,25 @@ class LinStarter:
         self.c_lamsig = IChan('syn_ie4.lam_sig', on_update=True)
         self.c_start = IChan('syn_ie4.bum_start', on_update=True)
         self.c_stop = IChan('syn_ie4.bum_stop', on_update=True)
+
         self.c_nshots = IChan('syn_ie4.re_bum', on_update=True)
         self.c_shots_left = IChan('syn_ie4.ie_bum', on_update=True)
 
         self.c_runmode.valueChanged.connect(self.c_runmode_cb)
         self.c_running.valueChanged.connect(self.c_running_cb)
-        self.c_nshots.valueChanged.connect(self.nshots_update)
+        self.c_nshots.valueChanged.connect(self.c_nshots_cb)
         self.c_lamsig.valueMeasured.connect(self.c_lamsig_cb)
 
         self.c_state = StrChan('linstarter.state', max_nelems=30)
         self.c_runmode_t = StrChan('linstarter.runmode', max_nelems=20)
 
-        #  channels
-        #  ic.syn.linRF.repRate    # really it's reprate divider
-        #  ic.syn.linBeam.repRate  # really it's reprate divider
         self.c_fr_reprate = IChan('ic.syn.linRF.repRate', on_update=True)
         self.c_beam_reprate = IChan('ic.syn.linBeam.repRate', on_update=True)
         self.c_fr_reprate.valueChanged.connect(self.c_reprate_cb)
         self.c_beam_reprate.valueChanged.connect(self.c_reprate_cb)
         self.rep_rates = {}
         self.beam_frq = 5
+        self.exp_runtime = 3.0
 
         self.run_timeout = Timer()
 
@@ -93,12 +92,14 @@ class LinStarter:
 
     def c_reprate_cb(self, chan):
         self.rep_rates[chan.name] = chan.val
+        if len(self.rep_rates) != 2:
+            return
         f = 50.0
         for x in self.rep_rates.values():
             f /= x
         self.beam_frq = f
-        print(self.beam_frq)
-
+        self.exp_runtime = self.nshots / f
+        self.expRuntimeUpdate.emit(self.exp_runtime)
 
     def c_runmode_cb(self, chan):
         self.runmode = 'counter' if chan.val == 1 else 'continuous'  # not totally correct
@@ -131,10 +132,12 @@ class LinStarter:
             self.c_runmode.setValue(1 if self.runmode == 'counter' else 0)
             self.runmode_req = True
 
-    def nshots_update(self, chan):
+    def c_nshots_cb(self, chan):
         self.nshots = chan.val
         self.nshots_req = False
         self.nshotsChanged.emit(self.nshots)
+        self.exp_runtime = self.nshots / self.beam_frq
+        self.expRuntimeUpdate.emit(self.exp_runtime)
 
     def set_nshots(self, nshots):
         if self.state == 'counter_idle':
