@@ -1,5 +1,6 @@
 from pycx4.cda import InstSignal, IChan, StrChan, Timer
 from transitions import Machine
+import time
 
 states = ['fail',               # if some command not finished in expected time
           'unknown',            # just started, no operation data yet
@@ -43,10 +44,12 @@ class LinStarter:
     def __init__(self):
         self.stateNotify = InstSignal(str)
         self.runmodeChanged = InstSignal(str)
-        self.nshotsChanged = InstSignal(int)
         self.runningNotify = InstSignal(bool)
         self.runDone = InstSignal()
         self.expRuntimeUpdate = InstSignal(float)
+        self.beamReprateUpdate = InstSignal(float)
+        self.nshotsChanged = InstSignal(int)
+        self.shotsLeftUpdate = InstSignal(int)
 
         self.m = Machine(model=self, states=states, transitions=transitions, initial='unknown',
                          after_state_change=self.state_notify)
@@ -71,6 +74,7 @@ class LinStarter:
         self.c_runmode.valueChanged.connect(self.c_runmode_cb)
         self.c_running.valueChanged.connect(self.c_running_cb)
         self.c_nshots.valueChanged.connect(self.c_nshots_cb)
+        self.c_shots_left.valueChanged.connect(self.shots_left_update)
         self.c_lamsig.valueMeasured.connect(self.c_lamsig_cb)
 
         self.c_state = StrChan('linstarter.state', max_nelems=30)
@@ -99,6 +103,7 @@ class LinStarter:
             f /= x
         self.beam_frq = f
         self.exp_runtime = self.nshots / f
+        self.beamReprateUpdate.emit(f)
         self.expRuntimeUpdate.emit(self.exp_runtime)
 
     def c_runmode_cb(self, chan):
@@ -161,6 +166,6 @@ class LinStarter:
             print('wrong state to stop')
 
     def shots_left_update(self, chan):
-        pass
+        self.shotsLeftUpdate.emit(chan.val)
 
 
