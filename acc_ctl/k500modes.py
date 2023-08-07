@@ -14,13 +14,12 @@ from acc_ctl.mode_defs import *
 remag_srv = 'canhw:12'
 remag_devs = ['d3m4n5', 'd5M1t4', 'd6M1t4']
 
-
 # hardcoded values for some energy
 remag_vals = {
-    'e2v2': {'d3m4n5': 262.0, 'd5M1t4': -831.0, 'd6M1t4': -831.0},
-    'p2v2': {'d3m4n5': 0.0, 'd5M1t4': 839.0, 'd6M1t4': 838.0},
-    'e2v4': {'d3m4n5': 262.0, 'd5M1t4': -831.0, 'd6M1t4': 0.0},
-    'p2v4': {'d3m4n5': 0.0, 'd5M1t4': 839.0, 'd6M1t4': 0.0}
+    'e2v2': {'d3m4n5': 250.0, 'd5M1t4': -820.0, 'd6M1t4': -820.0},
+    'p2v2': {'d3m4n5': 0.0, 'd5M1t4': 820.0, 'd6M1t4': 820.0},
+    'e2v4': {'d3m4n5': 250.0, 'd5M1t4': -820.0, 'd6M1t4': 0.0},
+    'p2v4': {'d3m4n5': 0.0, 'd5M1t4': 820.0, 'd6M1t4': 0.0}
 }
 
 remag_tolerance = 0.05
@@ -38,6 +37,17 @@ def remag_mode(val_dict):
         if this_mode:
             return mode
     return None
+
+
+def k500_mode(I_3m4n5, I_5M1t4, I_6M1t4):
+    if np.abs(I_3m4n5) < 0.5 and I_5M1t4 > 820 and I_6M1t4 > 820:
+        return 'p2v2'
+    elif np.abs(I_3m4n5) < 0.5 and I_5M1t4 > 820 and np.abs(I_6M1t4) < 0.5:
+        return 'p2v4'
+    elif I_3m4n5 > 250 and I_5M1t4 < -820 and np.abs(I_6M1t4) < 0.5:
+        return 'e2v4'
+    elif I_3m4n5 > 250 and I_5M1t4 < -820 and I_6M1t4 < -820:
+        return 'e2v2'
 
 
 class K500Director:

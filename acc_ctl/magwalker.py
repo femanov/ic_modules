@@ -1,124 +1,133 @@
-import sys
-import numpy as np
+# iset-walker (Bolkhov's cx driver) interface-class
+# walker interface channels:
+# walker.list - requested list of points to go through
+# walker.start - run process
+# walker.stop - stop running
+# walker.cur_step - current step, -1 when stopped (or finished)
+# array example to demag spectrometer: a = [2500 * ((-0.7)**x) for x in range(20)]
 
+from transitions import Machine
+import numpy as np
+import sys
 if "pycx4.qcda" in sys.modules:
     import pycx4.qcda as cda
 elif "pycx4.pycda" in sys.modules:
     import pycx4.pycda as cda
 
-# array example to demag spectrometer: a = [2500 * ((-0.7)**x) for x in range(20)]
 
 class MagWalker:
-
     def __init__(self, devname, name=None):
-        super(MagWalker, self).__init__()
+        self.stateNotify = cda.InstSignal(str)
         self.done = cda.InstSignal(str)
         self.progressing = cda.InstSignal(str, int)
         self.started = cda.InstSignal(str)
+        self.intercepted = cda.InstSignal(str)
 
         self.devname = devname
-        self.name = name
-        if name is None:
-            self.name = devname
+        self.name = devname if name is None else name
 
-        # channels:
-        # walker.list - requested list of points to go through
-        # walker.start - run process
-        # walker.stop - stop running
-        # walker.cur_step - current step, -1 when stopped (or finished)
-        self.list_chan = cda.VChan(devname + '.walker.list', dtype=cda.DTYPE_DOUBLE, max_nelems=20, on_update=True)
-        self.start_chan = cda.DChan(devname + '.walker.start', on_update=True)
-        self.stop_chan = cda.DChan(devname + '.walker.stop', on_update=True)
-        self.cur_step_chan = cda.DChan(devname + '.walker.cur_step', on_update=True)
-        self.iset_cur_chan = cda.DChan(devname + '.iset_cur', on_update=True)
-        self.iset_chan = cda.DChan(devname + '.iset', on_update=True)
+        self.list_chan = cda.VChan(f'{devname}.walker.list', dtype=cda.DTYPE_DOUBLE, max_nelems=20, on_update=True)
+        self.start_chan = cda.IChan(f'{devname}.walker.start', on_update=True)
+        self.stop_chan = cda.IChan(f'{devname}.walker.stop', on_update=True)
+        self.cur_step_chan = cda.IChan(f'{devname}.walker.cur_step', on_update=True)
+        self.iset_cur_chan = cda.DChan(f'{devname}.iset_cur', on_update=True)
+        self.iset_chan = cda.DChan(f'{devname}.iset', on_update=True)
+        self.imeas_chan = cda.DChan(f'{devname}.imes', on_update=True)
 
-        # just for some control
-        self.imeas_chan = cda.DChan(devname + '.imes', on_update=True)
-
-        self.initialized = False
         self.cur_list = None
-        self.requested_list = None
-        self.run_requested = False
-        self.running = False
+        self.walk_requested = False
         self.progress = 0
-        self.step = -1
-        self.step_pos = 0
-        self.path_length = 0
-        self.start_iset = 0
-        self.ext_cur_list = None
+        self.step = -2
+        # self.step_pos = 0
+        self.full_path = 0
 
         self.list_chan.valueMeasured.connect(self.list_update)
-        self.cur_step_chan.valueChanged.connect(self.step_update)
+        self.cur_step_chan.valueChanged.connect(self.cur_step_update)
         self.iset_cur_chan.valueChanged.connect(self.iset_cur_update)
+        self.iset_chan.valueChanged.connect(self.iset_update)
 
-    def iset_update(self, chan):
-        if self.step >= 0:
-            if np.abs(self.cur_list[self.step] - chan.val) < 2 * chan.quant:
-                # here we think operator intercepted acc control
-                self.stop()
+        self.states = ['unknown',
+                  'failure',
+                  {'name': 'stopped', 'on_enter': ['walk_stopped']},
+                  'prepare',
+                  {'name': 'walking', 'on_enter': ['walk_started']},
+                  ]
+
+        self.transitions = [
+            {'trigger': 'init', 'source': 'unknown', 'dest': 'stopped', 'unless': ['is_walking']},
+            {'trigger': 'init', 'source': 'unknown', 'dest': 'walking', 'conditions': ['is_walking']},
+            {'trigger': 'update', 'source': ['walking', 'prepare'], 'dest': 'stopped', 'unless': ['is_walking']},
+            {'trigger': 'update', 'source': ['stopped', 'prepare'], 'dest': 'walking', 'conditions': ['is_walking']},
+
+            {'trigger': 'list_wait', 'source': 'stopped', 'dest': 'prepare'},
+
+        ]
+
+        self.m = Machine(model=self, states=self.states, transitions=self.transitions, initial='unknown',
+                         after_state_change=self.state_notify)
+
+    def state_notify(self):
+        self.stateNotify.emit(self.state)
+
+    def is_walking(self):
+        return True if self.step >= 0 else False
+
+    def walk_stopped(self):
+        self.progress = 0
+        self.done.emit(self.name)
+
+    def walk_started(self):
+        self.full_path = self.path_length(0)
+        self.started.emit(self.name)
+
+    def cur_step_update(self, chan):
+        self.step = chan.val
+        if self.state == 'unknown':
+            self.init()
+        if self.state in {'walking', 'prepare', 'stopped'}:
+            self.update()
+
+    def set_list(self, np_list):
+        if self.state != 'stopped':
+            # ignore setting list in not stopped state
+            return
+        self.list_chan.setValue(np_list)
+        self.list_wait()
 
     def list_update(self, chan):
-        if not self.initialized:
-            self.initialized = True
         self.cur_list = chan.val
-        self.ext_cur_list = np.zeros(len(self.cur_list) + 1)
-        self.ext_cur_list[1:] = self.cur_list
-        if self.requested_list is not None:
-            self.set_list(self.requested_list)
-            self.requested_list = None
-            return
-        if self.run_requested:
+        if self.walk_requested:
             self.start()
 
-    def step_update(self, chan):
-        self.step = int(chan.val)
-        if self.step == -1 and self.running:
-            self.running = False
-            self.progress = 0
-            self.done.emit(self.name)
-            return
-        if self.step == 0:
-            self.step_pos = 0
-            self.running = True  # if somebody else run walker - we correct state flag.
-            self.update_path_length()
-            self.started.emit(self.name)
-            # line above may be not fully correct
-
-        if self.step > 0:
-            self.step_pos += np.abs(self.ext_cur_list[self.step-1] - self.ext_cur_list[self.step])
-
     def iset_cur_update(self, chan):
-        if not self.running:
+        if not self.state == 'walking':
             return
-        pos = self.step_pos + np.abs(self.ext_cur_list[self.step] - chan.val)
-        new_progress = int(100.0 * pos / self.path_length)
+        pos = self.path_length(self.step)
+        new_progress = int(100.0 * (1.0 - pos / self.full_path))
         if self.progress != new_progress:
             self.progress = new_progress
             self.progressing.emit(self.name, self.progress)
 
-    def set_list(self, np_list):
-        if self.initialized:
-            self.list_chan.setValue(np_list)
-        else:
-            self.requested_list = np_list
+    def iset_update(self, chan):
+        if self.state == 'walking':
+            if np.abs(self.cur_list[self.step] - chan.val) < 2 * chan.quant:
+                # here we think operator intercepted acc control
+                print('control intercepted')
 
     def start(self):
-        self.update_path_length()
         self.start_chan.setValue(1)
-        self.running = True
-        self.started.emit(self.name)
+        self.walk_requested = True
 
     def stop(self):
         self.stop_chan.setValue(1)
 
     def run_list(self, np_list):
         self.set_list(np_list)
-        self.run_requested = True
+        self.walk_requested = True
 
-    def update_path_length(self):
-        self.start_iset = self.iset_cur_chan.val
-        self.ext_cur_list[0] = self.start_iset
-        self.path_length = 0
-        for ind in range(len(self.ext_cur_list)-1):
-            self.path_length += np.abs(self.ext_cur_list[ind] - self.ext_cur_list[ind+1])
+    def path_length(self, step):
+        start_iset = self.iset_cur_chan.val
+        p_length = np.abs(self.cur_list[step] - start_iset)
+        for ind in range(step, len(self.cur_list)-1):
+            p_length += np.abs(self.cur_list[ind] - self.cur_list[ind+1])
+        return p_length
